@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg, Count
 from django.urls import reverse
 from django.utils import timezone
+import uuid
 
 from restaurant_review.models import Restaurant, Review
 
@@ -48,6 +49,7 @@ def add_restaurant(request):
         restaurant.name = name
         restaurant.street_address = street_address
         restaurant.description = description
+        restaurant.image_name = uuid.uuid4()
         Restaurant.save(restaurant)
                 
         return HttpResponseRedirect(reverse('details', args=(restaurant.id,)))
@@ -72,6 +74,7 @@ def add_review(request, id):
         review.user_name = user_name
         review.rating = rating
         review.review_text = review_text
+        review.image_name = uuid.uuid4()
         Review.save(review)
                 
     return HttpResponseRedirect(reverse('details', args=(id,)))        
