@@ -94,14 +94,14 @@ def add_review(request, id):
             # Create client
             azure_credential = DefaultAzureCredential()
             blob_service_client = BlobServiceClient(
-                account_url="https://%s.blob.core.windows.net" % os.environ['STORAGE_ACCOUNT_NAME'],
+                account_url=os.environ['STORAGE_URL'],
                 credential=azure_credential)
 
             # Get file name to use in database
             image_name = str(uuid.uuid4()) + ".png"
             
             # Create blob client
-            blob_client = blob_service_client.get_blob_client(container="restaurants", blob=image_name)
+            blob_client = blob_service_client.get_blob_client(container=os.environ['STORAGE_CONTAINER_NAME'], blob=image_name)
             print("\nUploading to Azure Storage as blob:\n\t" + image_name)
 
             # Upload file

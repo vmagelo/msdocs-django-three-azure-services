@@ -14,9 +14,9 @@ This is a Python (Django) web app using the Django framework with three Azure se
 
 * Add csrf_token, c.f. [here](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
 
-* Use a local storage solution when running locally?
+* Use a local storage solution when running locally? For example: [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite).
 
-* Change auth from app service principal to Azure AD account? Depends. With a local storage solution, no local dependency on Azure so no credentials needed. (Though would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (continue to use Azure), then we should use AD user that has access to storage.
+* Change auth from app service principal to Azure AD account? With a local storage solution, there is no dependency on Azure to run locally,  so no credentials needed. (Though would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (i.e., continue to use Azure), then we should use AD user that has access to storage.
 
 * When deployed, managed identity would be used. Verify this.
 
@@ -106,7 +106,9 @@ uuid_str = str(uuid.uuid4())
 
 To work with the Python SDK and Azure Blob Storage, see [Quickstart: Manage blobs with Python v12 SDK](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python).
 
-Create container called *restaurants* and set access level to *Blob (anonymous read access for blobs only)*. It makes this example easier to have images public. Could set up the example so that images are accessed through web app and not public, but this would require more coding and would complicate the presentation.
+Create container called *restaurants* and set access level to *Blob (anonymous read access for blobs only)*. It makes this example easier to have images public when **reading**. Could set up the example so that images are accessed through web app and not public, but this would require more coding and would complicate the presentation.
+
+When **writing**, this should be done authenticated. Locally with Azure User or App service principal (registered app) with role. Deployed, with managed identity.
 
 ### Tip 5
 
