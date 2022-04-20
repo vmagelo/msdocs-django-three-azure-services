@@ -82,7 +82,7 @@ def add_review(request, id):
         if 'reviewImage' in request.FILES:
             image_data = request.FILES['reviewImage']
             upload_name = image_data.name
-            print("image name = " + upload_name)
+            print("Original image name = " + upload_name)
 
             # Create client
             azure_credential = DefaultAzureCredential()
@@ -90,9 +90,8 @@ def add_review(request, id):
                 account_url="https://%s.blob.core.windows.net" % os.environ['STORAGE_ACCOUNT_NAME'],
                 credential=azure_credential)
 
-            # Get file
-            image_uuid = uuid.uuid4()
-            image_name = str(image_uuid) + ".png"
+            # Get file name to use in database
+            image_name = str(uuid.uuid4()) + ".png"
             
             # Create blob client
             blob_client = blob_service_client.get_blob_client(container="restaurants", blob=image_name)
@@ -102,6 +101,7 @@ def add_review(request, id):
             with image_data as data:
                 blob_client.upload_blob(data)
         else:
+            # No image for review
             image_name=None
 
         review = Review()

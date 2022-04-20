@@ -1,10 +1,8 @@
 # Deploy a Python (Django) web app with PostgreSQL in Azure
 
-This is a Python web app using the Django framework and the Azure Database for PostgreSQL relational database service. The Django app is hosted in a fully managed Azure App Service. This app is designed to be be run locally and then deployed to Azure. For more information on how to use this web app, see the tutorial [*Deploy a Python (Django or Flask) web app with PostgreSQL in Azure*](https://docs.microsoft.com/en-us/azure/app-service/tutorial-python-postgresql-app).
+This is a Python (Django) web app using the Django framework with three Azure services: App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. The Django web app is hosted in a fully managed Azure App Service. The web app is an example of a restaurant review site.
 
-If you need an Azure account, you can [create on for free](https://azure.microsoft.com/free/).
-
-A Flask sample application is also available for the article at https://github.com/Azure-Samples/msdocs-flask-postgresql-sample-app.
+This app is designed to be be run locally and then deployed to Azure. 
 
 ## Requirements
 
@@ -16,10 +14,12 @@ The [requirements.txt](./requirements.txt) has the following packages:
 | [pyscopg2-binary](https://pypi.org/project/psycopg-binary/) | PostgreSQL database adapter for Python. |
 | [python-dotenv](https://pypi.org/project/python-dotenv/) | Read key-value pairs from .env file and set them as environment variables. In this sample app, those variables describe how to connect to the database locally. <br><br> This package is used in the [manage.py](./manage.py) file to load environment variables. |
 | [whitenoise](https://pypi.org/project/whitenoise/) | Static file serving for WSGI applications, used in the deployed app. <br><br> This package is used in the [azureproject/production.py](./azureproject/production.py) file, which configures production settings. |
+| [azure-blob-storage](https://pypi.org/project/azure-storage/) | Microsoft Azure Storage SDK for Python |
+| [azure-identity](https://pypi.org/project/azure-identity/) | Microsoft Azure Identity Library for Python |
 
 ## How to run (Windows)
 
-Create virtual environment.
+Create a virtual environment.
 
 ```dos
 py -m venv .venv
@@ -52,13 +52,13 @@ When making [model.py](./restaurant_review/models.py) changes run `python manage
 
 ### Tip 2
 
-When creating a new PostgreSQL locally, for example with Azure Data Studio:
+When creating a new PostgreSQL locally, for example with [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/what-is-azure-data-studio?view=sql-server-ver15):
 
 ```dos
 CREATE DATABASE <database-name>;
 ```
 
-Or, with psql.exe:
+Or, with [psql.exe](https://www.postgresql.org/download/):
 
 ```dos
 psql --username=<user-name> --password <password>
@@ -78,12 +78,26 @@ To create an GUID in Python, use [UUIDField](https://docs.djangoproject.com/en/1
 import uuid
 from django.db import models
 
-id = models.UUIDField()
-```
+# model table column example
+image_name = models.CharField(max_length=100, null=True)    
 
+# create a uuid
+uuid_str = str(uuid.uuid4()) 
+```
 
 ### Tip 4
 
 To work with the Python SDK and Azure Blob Storage, see [Quickstart: Manage blobs with Python v12 SDK](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python).
 
-Create container called *restaurants* and set access level to *Blob (anonymous read access for blobs only)*.
+Create container called *restaurants* and set access level to *Blob (anonymous read access for blobs only)*. It makes this example easier to have images public. Could set up the example so that images are accessed through web app and not public, but this would require more coding and would complicate the presentation.
+
+### Tip 5
+
+To work with the HTML input file, make sure the form tag has accept
+
+```html
+<form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
+    <label for="reviewImage" class="form-label">Add a photo</label>
+    <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
+</form>
+```
