@@ -4,6 +4,13 @@ This is a Python (Django) web app using the Django framework with three Azure se
 
 This app is designed to be be run locally and then deployed to Azure. 
 
+| Function      | Local Dev | Azure Hosted |
+| ------------- | --------- | ------------ |
+| Web app | localhost | App Service |
+| Database | Local PostgreSQL instance | Azure PostgreSQL service |
+| Storage | Azure Blob Storage* | Azure Blob Storage |
+
+\*Note that locally, Azure Blob Storage is still used.
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:

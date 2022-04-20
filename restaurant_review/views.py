@@ -6,11 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg, Count
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib import messages
 from django import forms
-from PIL import Image
 
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
+import requests
+from requests import RequestException, exceptions
 
 from restaurant_review.models import Restaurant, Review
 
@@ -45,11 +47,12 @@ def add_restaurant(request):
         name = request.POST['restaurant_name']
         street_address = request.POST['street_address']
         description = request.POST['description']
-    except (KeyError):
-        # Redisplay the question voting form.
-        return render(request, 'restaurant_review/add_restaurant.html', {
-            'error_message': "You must include a restaurant name, address, and description",
-        })
+        if (name == "" or description == ""):
+            raise RequestException()
+    except (KeyError, requests.exceptions.RequestException) as e:
+        # Redisplay the restaurant entry form.
+        messages.add_message(request, messages.INFO, 'Restaurant not added. Include at least a restaurant name and description.')
+        return HttpResponseRedirect(reverse('create_restaurant'))  
     else:
         restaurant = Restaurant()
         restaurant.name = name
@@ -71,18 +74,22 @@ def add_review(request, id):
         user_name = request.POST['user_name']
         rating = request.POST['rating']
         review_text = request.POST['review_text']
-            
-    except (KeyError):
-        # Redisplay the question voting form.
-        return render(request, 'restaurant_review/add_review.html', {
-            'error_message': "Error adding review",
-        })
+        if (user_name == "" or rating == ""):
+            raise RequestException()            
+    except (KeyError, requests.exceptions.RequestException) as e:
+        # Redisplay the details page
+        messages.add_message(request, messages.INFO, 'Review not added. Include at lease name and rating for review.')
+        return HttpResponseRedirect(reverse('details', args=(id,)))  
     else:
 
         if 'reviewImage' in request.FILES:
             image_data = request.FILES['reviewImage']
-            upload_name = image_data.name
-            print("Original image name = " + upload_name)
+            print("Original image name = " + image_data.name)
+            print("File size = " + str(image_data.size))
+
+            if (image_data.size > 2048000):
+                messages.add_message(request, messages.INFO, 'Image too big, try again.')
+                return HttpResponseRedirect(reverse('details', args=(id,)))  
 
             # Create client
             azure_credential = DefaultAzureCredential()

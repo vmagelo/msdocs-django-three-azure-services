@@ -23,7 +23,13 @@
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReviewModal">
             Add new review
         </button>
-        <!-- <a href="{% url 'create_restaurant' %}" class="btn btn-success px-4 gap-3">Add new review</a> -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </p>
 
     <!-- Button trigger modal -->
@@ -106,7 +112,7 @@
                       <input type="text" class="form-control" id="review_text" name="review_text">
                   </div>
                   <div class="mb-3">
-                    <label for="reviewImage" class="form-label">Add a photo (limit: 1, less than 4 MB, .png)</label>
+                    <label for="reviewImage" class="form-label">Add a photo (limits: 1 image, less than 2 MB, .png)</label>
                     <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
                   </div>
               </div>
