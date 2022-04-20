@@ -4,4 +4,3 @@ python-dotenv
 whitenoise
 azure-storage-blob
 azure-identity
-Pillow

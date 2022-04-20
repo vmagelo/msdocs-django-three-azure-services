@@ -119,7 +119,7 @@ messages.add_message(request, messages.INFO,
 return HttpResponseRedirect(reverse('create_restaurant'))  
 ```
 
-The message backend is set in settings.py and production.py with:
+The message backend is set in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) with:
 
 ```python
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
