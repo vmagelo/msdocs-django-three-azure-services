@@ -6,7 +6,8 @@ This is a Python (Django) web app using the Django framework with three Azure se
 | ------------- | --------- | ------------ |
 | Web app | localhost | App Service |
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
-| Storage | Azure Blob Storage* | Azure Blob Storage |
+| Storage | Azure Blob Storage or Local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
+
 
 \*Note that locally, Azure Blob Storage is used as well. 
 
@@ -14,11 +15,9 @@ This is a Python (Django) web app using the Django framework with three Azure se
 
 * Add csrf_token, c.f. [here](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
 
-* Use a local storage solution when running locally? For example: [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite).
+* Change auth from app service principal to Azure AD account. With a local storage solution, there is no dependency on Azure to run locally,  so no credentials needed. (Though this app would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (i.e., continue to use Azure Blob Storage), then we should use AD user that has access to storage. How to correctly create AD user?
 
-* Change auth from app service principal to Azure AD account? With a local storage solution, there is no dependency on Azure to run locally,  so no credentials needed. (Though would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (i.e., continue to use Azure), then we should use AD user that has access to storage.
-
-* When deployed, managed identity would be used. Verify this.
+* When deployed, managed identity would be used. Need to run through this.
 
 ![Example review list with images](/static/images/Example-reviews.png)
 ## Requirements
