@@ -1,8 +1,6 @@
 # Deploy a Python (Django) web app with PostgreSQL in Azure
 
-This is a Python (Django) web app using the Django framework with three Azure services: App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. The Django web app is hosted in a fully managed Azure App Service. The web app is an example of a restaurant review site.
-
-This app is designed to be be run locally and then deployed to Azure. 
+This is a Python (Django) web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be be run locally and then deployed to Azure. 
 
 | Function      | Local Dev | Azure Hosted |
 | ------------- | --------- | ------------ |
@@ -10,7 +8,17 @@ This app is designed to be be run locally and then deployed to Azure.
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
 | Storage | Azure Blob Storage* | Azure Blob Storage |
 
-\*Note that locally, Azure Blob Storage is used. Substitute this with local storage solution?
+\*Note that locally, Azure Blob Storage is used as well. 
+
+## Todo
+
+* Add csrf_token, c.f. [here](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
+
+* Use a local storage solution when running locally?
+
+* Change auth from app service principal to Azure AD account? Depends. With a local storage solution, no local dependency on Azure so no credentials needed. (Though would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (continue to use Azure), then we should use AD user that has access to storage.
+
+* When deployed, managed identity would be used. Verify this.
 
 ![Example review list with images](/static/images/Example-reviews.png)
 ## Requirements
