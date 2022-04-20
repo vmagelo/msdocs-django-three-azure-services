@@ -1,15 +1,6 @@
 {% extends "restaurant_review/base.html" %}
 {% load restaurant_extras %}
 {% block title %}Restaurant Details{% endblock %}
-{% block head %}
-  {{ block.super }}
-  <style>
-    body {
-        min-height: 75rem;
-        padding-top: 4.5rem;
-    }
-  </style>
-{% endblock %}
 {% block content %}
     <h1>{{ restaurant.name }}</h1>
 
@@ -23,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col-md-2 fw-bold">Rating:</div>
-        <div class="col"></div>                
+        <div class="col"> {% star_rating restaurant.avg_rating restaurant.review_count  %} </div>                
     </div>
 
     <h4 class="mt-5">Reviews</h4>
@@ -44,6 +35,7 @@
                     <th>User</th>
                     <th>Rating</th>
                     <th>Review</th>
+                    <th>Photo</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +45,14 @@
                         <td>{{ review.user_name }}</td>
                         <td>{{ review.rating }}</td>
                         <td>{{ review.review_text }}</td>
+                        <td>
+                          {% if review.image_name %}
+                            <a href="https://vmagelowebapp.blob.core.windows.net/restaurants/{{review.image_name}}">
+                              <img height="30" src="https://vmagelowebapp.blob.core.windows.net/restaurants/{{review.image_name}}"/>
+                            </a>
+                          {% endif %}
+                        </td>
+
                     </tr>
                 {% endfor %}
             </tbody>
@@ -69,7 +69,7 @@
             <h5 class="modal-title" id="addReviewModalLabel">Add Review</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-              <form method="POST" action="{% url 'add_review' restaurant.id %}">
+              <form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
 
               <div class="modal-body">
 
@@ -105,12 +105,16 @@
                       <label for="review_text" class="form-label fw-bold">Comments</label>
                       <input type="text" class="form-control" id="review_text" name="review_text">
                   </div>
+                  <div class="mb-3">
+                    <label for="reviewImage" class="form-label">Add a photo (limit: 1, less than 4 MB, .png)</label>
+                    <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
+                  </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
-        </form>
+          </form>
         </div>
       </div>
     </div>
