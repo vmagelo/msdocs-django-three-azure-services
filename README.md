@@ -11,6 +11,8 @@ This app is designed to be be run locally and then deployed to Azure.
 | Storage | Azure Blob Storage* | Azure Blob Storage |
 
 \*Note that locally, Azure Blob Storage is used. Substitute this with local storage solution?
+
+![Example review list with images](/static/images/Example-reviews.png)
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:
