@@ -114,7 +114,8 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 This sample app used the Django [messages framework](https://docs.djangoproject.com/en/4.0/ref/contrib/messages/). For example, to pass a message back if there is an error, do this:
 
 ```python
-messages.add_message(request, messages.INFO, 'Restaurant not added. Include at least a restaurant name and description.')
+messages.add_message(request, messages.INFO, 
+    'Restaurant not added. Include at least a restaurant name and description.')
 return HttpResponseRedirect(reverse('create_restaurant'))  
 ```
 
