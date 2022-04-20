@@ -93,7 +93,7 @@ Create container called *restaurants* and set access level to *Blob (anonymous r
 
 ### Tip 5
 
-To work with the HTML input file, make sure the form tag has accept
+To work with the HTML input file, make sure the form tag has *encytype*.
 
 ```html
 <form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
