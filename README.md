@@ -10,7 +10,7 @@ This app is designed to be be run locally and then deployed to Azure.
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
 | Storage | Azure Blob Storage* | Azure Blob Storage |
 
-\*Note that locally, Azure Blob Storage is still used.
+\*Note that locally, Azure Blob Storage is used. Substitute this with local storage solution?
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:
@@ -108,3 +108,20 @@ To work with the HTML input file, make sure the form tag has *encytype*.
     <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
 </form>
 ```
+
+### Tip 6
+
+This sample app used the Django [messages framework](https://docs.djangoproject.com/en/4.0/ref/contrib/messages/). For example, to pass a message back if there is an error, do this:
+
+```python
+messages.add_message(request, messages.INFO, 'Restaurant not added. Include at least a restaurant name and description.')
+return HttpResponseRedirect(reverse('create_restaurant'))  
+```
+
+The message backend is set in settings.py and production.py with:
+
+```python
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+```
+
+This storage messages in session data.
