@@ -4,20 +4,26 @@ This is a Python (Django) web app using the Django framework with three Azure se
 
 | Function      | Local Dev | Azure Hosted |
 | ------------- | --------- | ------------ |
-| Web app | localhost | App Service |
+| Web app | runs locally, <br> e.g., http://127.0.0.1:8000 | runs in App Service, <br> e.g., https://\<app-name>.azurewebsites.net  |
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
-| Storage | Azure Blob Storage or Local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
+| Storage | Azure Blob Storage or <br> local emulator like <br> [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-\*Note that locally, Azure Blob Storage is used as well. 
+\*Current code assumes Azure Blob Storage used locally.
 
+There are two patterns for dealing with auth types possible:
+
+|   | Local vev | Azure-hosted |
+| - | --------- | ------------ |
+| pattern&nbsp;1 | app service principal, add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | service principal with app settings defining AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
+| pattern&nbsp;2 | AD group, developer account, add AZURE_USERNAME and AZURE_PASSWORD to the *.env* file | managed identity, configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
+
+The code doesn't change between patter 1 and 2.
 ## Todo
 
 * Add csrf_token, c.f. [here](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
 
-* Change auth from app service principal to Azure AD account. With a local storage solution, there is no dependency on Azure to run locally,  so no credentials needed. (Though this app would need more coding to catch that we are in dev environment and then use an appropriate local storage.) With no local storage solution (i.e., continue to use Azure Blob Storage), then we should use AD user that has access to storage. How to correctly create AD user?
-
-* When deployed, managed identity would be used. Need to run through this.
+* Deploy and test managed identity.
 
 ![Example review list with images](/static/images/Example-reviews.png)
 ## Requirements
