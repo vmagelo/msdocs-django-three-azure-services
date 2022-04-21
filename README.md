@@ -123,7 +123,8 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 ```html
 <form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
     <label for="reviewImage" class="form-label">Add a photo</label>
-    <input type="file" class="form-control" id="reviewImage" name="reviewImage" accept="image/png, image/jpeg">                    
+    <input type="file" class="form-control" id="reviewImage" 
+           name="reviewImage" accept="image/png, image/jpeg">                    
 </form>
 ```
 
@@ -131,12 +132,24 @@ The *accept* attribute only filters what can be uploaded in upload dialog box. I
 
 ### Tip 6
 
-This sample app used the Django [messages framework](https://docs.djangoproject.com/en/4.0/ref/contrib/messages/). For example, to pass a message back if there is an error, do this:
+This sample app uses the Django [messages framework](https://docs.djangoproject.com/en/4.0/ref/contrib/messages/). For example, to pass a message back if there is an error in a form submission (add restaurant, add review), do this:
 
 ```python
 messages.add_message(request, messages.INFO, 
     'Restaurant not added. Include at least a restaurant name and description.')
 return HttpResponseRedirect(reverse('create_restaurant'))  
+```
+
+In the template put:
+
+```html
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 ```
 
 The message backend is set in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) with:
