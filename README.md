@@ -44,8 +44,11 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
     * anything else? PostgreSQL uses config/env variables so this doesn't get managed identity.
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
+    * ssh into app service
+    * create the databases with `python manage.py migrate`
 
 1. Set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_URL, STORAGE_CONTAINER_NAME
+
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:
