@@ -38,10 +38,10 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
 
 ## Deployment (Todo)
 
-1. Do managed identity work:
+1. Do managed identity work following [Auth from Azure-hosted apps](https://review.docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps):
     * app service, set managed identity as system-assigned
     * assign role as "Storage Blob Data Contributor", so app service can connect to storage
-    * anything else?
+    * anything else? PostgreSQL uses config/env variables so this doesn't get managed identity.
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
 
