@@ -6,14 +6,14 @@ This is a Python web app using the Django framework with three Azure services: A
 | ------------- | --------- | ------------ |
 | Web app | runs locally, e.g., http://127.0.0.1:8000 | runs in App Service, e.g., https://\<app-name>.azurewebsites.net  |
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
-| Storage | Azure Blob Storage or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
+| Storage | Azure Blob Storage* or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
 \*Current code assumes Azure Blob Storage used locally.
 
-There are two patterns for dealing with auth types possible:
+The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
 
-|   | Local vev | Azure-hosted |
+|   | Local dev | Azure-hosted |
 | - | --------- | ------------ |
 | pattern&nbsp;1 | app service principal <br> add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | app service principal <br> configure app settings for AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
 | pattern&nbsp;2 | AD group, developer account<br> add AZURE_USERNAME and AZURE_PASSWORD to the *.env* file | managed identity<br> configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
