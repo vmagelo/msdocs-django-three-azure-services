@@ -18,7 +18,7 @@ The assumption is that code doesn't change when moving from dev to Azure-hosted.
 | pattern&nbsp;1 | app service principal <br> add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | app service principal <br> configure app settings for AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
 | pattern&nbsp;2 | AD group, developer account<br> add AZURE_USERNAME and AZURE_PASSWORD to the *.env* file | managed identity<br> configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
 
-The code doesn't change between pattern 1 and 2.
+The code doesn't change between pattern 1 and 2, only what goes into *.env* file.
 
 Example screenshot:
 
@@ -30,10 +30,10 @@ Example screenshot:
 
 * Propagate changes in restaurant review app back to previous Django tutorials, including:
   * csrf token use, don't use exempt in views.py
-  * message passing to forms when there is an error (for add review and restaurant), see [views.py](//restaurant_review/views.py) for an example
+  * message passing to forms when there is an error (for add review and restaurant), see [views.py](./restaurant_review/views.py) for an example
   * add check of forms looking for blank fields and raise error (for add review and restaurant)
   * check render() lookup on url and make sure they are correct for error conditions, in some cases just use reverse()
-  * pull all CSS to restaurants.css and link to from base.html, should be no CSS in other templates
+  * pull all CSS to [restaurants.css](./static/restaurant.css) and link to from base.html, should be no CSS in other templates
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:
@@ -115,6 +115,8 @@ image_name = models.CharField(max_length=100, null=True)
 uuid_str = str(uuid.uuid4()) 
 ```
 
+CharField could be max length 32 (size of uuid) but doesn't hurt to make it bigger in case some other uuid that is longer is used.
+
 ### Tip 4
 
 To work with the Python SDK and Azure Blob Storage, see [Quickstart: Manage blobs with Python v12 SDK](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python).
@@ -135,7 +137,7 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 </form>
 ```
 
-The *accept* attribute only filters what can be uploaded in upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. 
+The input tag *accept* attribute only filters what can be uploaded in the upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be to use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. 
 
 ### Tip 6
 
@@ -147,7 +149,7 @@ messages.add_message(request, messages.INFO,
 return HttpResponseRedirect(reverse('create_restaurant'))  
 ```
 
-In the template put:
+In the template redirected to put:
 
 ```html
 {% if messages %}
@@ -165,4 +167,4 @@ The message backend is set in [settings.py](./azureproject/settings.py) and [pro
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 ```
 
-This storage messages in session data.
+This storage messages in session data. The default is cookie if the `MESSAGE_STORAGE` variable is not set.
