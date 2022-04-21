@@ -76,7 +76,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
               <form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
-
+              {% csrf_token %}
               <div class="modal-body">
 
                 <div class="mb-3">                        
@@ -112,8 +112,8 @@
                       <input type="text" class="form-control" id="review_text" name="review_text">
                   </div>
                   <div class="mb-3">
-                    <label for="reviewImage" class="form-label">Add a photo (limits: 1 image, less than 2 MB, .png)</label>
-                    <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
+                    <label for="reviewImage" class="form-label">Add a photo (limits: 1 image, less than 2 MB, png or jpg)</label>
+                    <input type="file" class="form-control" id="reviewImage" name="reviewImage" accept="image/png, image/jpeg">                    
                   </div>
               </div>
               <div class="modal-footer">

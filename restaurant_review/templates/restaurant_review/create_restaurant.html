@@ -19,7 +19,7 @@
     </ul>
     {% endif %}
 
-    <form method="POST" action="{% url 'add_restaurant' %}">
+    <form method="POST" action="{% url 'add_restaurant' %}">{% csrf_token %}
         <div class="mb-3">
           <label for="restaurant_name" class="form-label">Name</label>
           <input type="text" class="form-control" id="restaurant_name" name="restaurant_name">

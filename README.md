@@ -26,8 +26,6 @@ Example screenshot:
 
 ## Todo
 
-* Add csrf_token, c.f. [here](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
-
 * Deploy and test managed identity.
 ## Requirements
 
@@ -125,9 +123,11 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 ```html
 <form method="POST" action="{% url 'add_review' restaurant.id %}" enctype="multipart/form-data">
     <label for="reviewImage" class="form-label">Add a photo</label>
-    <input type="file" class="form-control" id="reviewImage" name="reviewImage">                    
+    <input type="file" class="form-control" id="reviewImage" name="reviewImage" accept="image/png, image/jpeg">                    
 </form>
 ```
+
+The *accept* attribute only filters what can be uploaded in upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. 
 
 ### Tip 6
 

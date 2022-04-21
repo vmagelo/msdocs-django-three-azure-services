@@ -41,7 +41,7 @@ def create_restaurant(request):
     return render(request, 'restaurant_review/create_restaurant.html')
 
 
-@csrf_exempt
+#@csrf_exempt
 def add_restaurant(request):
     try:
         name = request.POST['restaurant_name']
@@ -63,7 +63,7 @@ def add_restaurant(request):
                 
         return HttpResponseRedirect(reverse('details', args=(restaurant.id,)))
 
-@csrf_exempt
+#@csrf_exempt
 def add_review(request, id):
     try: 
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
