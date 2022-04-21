@@ -18,7 +18,7 @@ The assumption is that code doesn't change when moving from dev to Azure-hosted.
 | pattern&nbsp;1 | app service principal <br> add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | app service principal <br> configure app settings for AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
 | pattern&nbsp;2 | AD group, developer account<br> add AZURE_USERNAME and AZURE_PASSWORD to the *.env* file | managed identity<br> configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
 
-The code doesn't change between pattern 1 and 2, only what goes into *.env* file.
+The code doesn't change between pattern 1 and 2, only what goes into *.env* file in local dev casae.
 
 Example screenshot:
 
@@ -123,7 +123,7 @@ To work with the Python SDK and Azure Blob Storage, see [Quickstart: Manage blob
 
 Create container called *restaurants* and set access level to *Blob (anonymous read access for blobs only)*. It makes this example easier to have images public when **reading**. Could set up the example so that images are accessed through web app and not public, but this would require more coding and would complicate the presentation.
 
-When **writing**, this should be done authenticated. Locally with Azure User or App service principal (registered app) with role. Deployed, with managed identity.
+When **writing**, this should be done authenticated. Locally with authenticated Azure AD User or App service principal (registered app) with role. Deployed, with App service principal or managed identity.
 
 ### Tip 5
 
@@ -137,7 +137,7 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 </form>
 ```
 
-The input tag *accept* attribute only filters what can be uploaded in the upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be to use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. 
+The input tag *accept* attribute only filters what can be uploaded in the upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be to use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. This is beyond the scope of this sample app.
 
 ### Tip 6
 
