@@ -18,7 +18,9 @@ The assumption is that code doesn't change when moving from dev to Azure-hosted.
 | pattern&nbsp;1 | app service principal <br> add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | app service principal <br> configure app settings for AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
 | pattern&nbsp;2 | AD group, developer account<br> add AZURE_USERNAME and AZURE_PASSWORD to the *.env* file | managed identity<br> configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
 
-The code doesn't change between pattern 1 and 2, only what goes into *.env* file in local dev casae.
+The code doesn't change between pattern 1 and 2, only what goes into *.env* file in local dev case. We are primarily interested in pattern 2 and showing that with managed identity in Azure.
+
+See [Tip 7](#tip-7) below for a bit of gotcha using developer account.
 
 Example screenshot:
 
@@ -168,3 +170,16 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 ```
 
 This storage messages in session data. The default is cookie if the `MESSAGE_STORAGE` variable is not set.
+
+### Tip 7
+
+A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `AzureDefaultCredential()`. After some looking around it seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is recommended:
+
+```python
+azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
+``` 
+After doing that, I could sign in to Visual Studio code or use `az login` and my developer account worked. There looks to be a way to clear out your msal.cache but that seemed extreme. References [issue 16306](https://github.com/Azure/azure-sdk-for-net/issues/16306#issuecomment-724189313), [issue 16828](https://github.com/Azure/azure-sdk-for-python/issues/16828).
+
+Another workaround, not recommended, is to just add to *.env* file AZURE_USERNAME and AZURE_PASSWORD to directly pass the values in. DefaultAzureCredential() without exclude flag will find the values in the *.env* file and use them.
+
+Is there any harm on keeping `exclude_shared_token_cache_credential=True` when deploying?

@@ -88,7 +88,7 @@ def add_review(request, id):
                 return HttpResponseRedirect(reverse('details', args=(id,)))  
 
             # Create client
-            azure_credential = DefaultAzureCredential()
+            azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
             blob_service_client = BlobServiceClient(
                 account_url=os.environ['STORAGE_URL'],
                 credential=azure_credential)
