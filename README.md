@@ -26,16 +26,26 @@ Example screenshot:
 
 ![Example review list with images](/static/images/Example-reviews.png)
 
-## Todo
+## Propagate Django changes
 
-* Deploy and test managed identity.
+Propagate changes in restaurant review app back to previous Django tutorials, including:
 
-* Propagate changes in restaurant review app back to previous Django tutorials, including:
-  * csrf token use, don't use exempt in views.py
-  * message passing to forms when there is an error (for add review and restaurant), see [views.py](./restaurant_review/views.py) for an example
-  * add check of forms looking for blank fields and raise error (for add review and restaurant)
-  * check render() lookup on url and make sure they are correct for error conditions, in some cases just use reverse()
-  * pull all CSS to [restaurants.css](./static/restaurant.css) and link to from base.html, should be no CSS in other templates
+* csrf token use, don't use exempt in views.py
+* message passing to forms when there is an error (for add review and restaurant), see [views.py](./restaurant_review/views.py) for an example
+* add check of forms looking for blank fields and raise error (for add review and restaurant)
+* check render() lookup on url and make sure they are correct for error conditions, in some cases just use reverse()
+* pull all CSS to [restaurants.css](./static/restaurant.css) and link to from base.html, should be no CSS in other templates
+
+## Deployment (Todo)
+
+1. Do managed identity work:
+    * app service, set managed identity as system-assigned
+    * assign role as "Storage Blob Data Contributor", so app service can connect to storage
+    * anything else?
+
+1. Deploy the app with one of the methods: VS Code, local git, ZIP.
+
+1. Set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_URL, STORAGE_CONTAINER_NAME
 ## Requirements
 
 The [requirements.txt](./requirements.txt) has the following packages:
