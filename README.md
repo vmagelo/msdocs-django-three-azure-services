@@ -9,7 +9,7 @@ This is a Python web app using the Django framework with three Azure services: A
 | Storage | Azure Blob Storage* or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-\*Current code assumes Azure Blob Storage used locally.
+\*Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_URL and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. Perhaps beyond the scope of this sample app.
 
 The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
 
