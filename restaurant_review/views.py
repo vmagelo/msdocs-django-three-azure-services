@@ -1,17 +1,13 @@
 import uuid
 import os
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render
 from django.db.models import Avg, Count
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib import messages
-from django import forms
-
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
-import requests
 from requests import RequestException, exceptions
 
 from restaurant_review.models import Restaurant, Review
@@ -49,7 +45,7 @@ def add_restaurant(request):
         description = request.POST['description']
         if (name == "" or description == ""):
             raise RequestException()
-    except (KeyError, requests.exceptions.RequestException) as e:
+    except (KeyError, exceptions.RequestException) as e:
         # Redisplay the restaurant entry form.
         messages.add_message(request, messages.INFO, 'Restaurant not added. Include at least a restaurant name and description.')
         return HttpResponseRedirect(reverse('create_restaurant'))  
@@ -76,9 +72,9 @@ def add_review(request, id):
         review_text = request.POST['review_text']
         if (user_name == "" or rating == ""):
             raise RequestException()            
-    except (KeyError, requests.exceptions.RequestException) as e:
+    except (KeyError, exceptions.RequestException) as e:
         # Redisplay the details page
-        messages.add_message(request, messages.INFO, 'Review not added. Include at lease name and rating for review.')
+        messages.add_message(request, messages.INFO, 'Review not added. Include at least name and rating for review.')
         return HttpResponseRedirect(reverse('details', args=(id,)))  
     else:
 
