@@ -90,7 +90,7 @@ def add_review(request, id):
             # Create client
             azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
             blob_service_client = BlobServiceClient(
-                account_url=os.environ['STORAGE_URL'],
+                account_url="https://%s.blob.core.windows.net/" % os.environ['STORAGE_ACCOUNT_NAME'],
                 credential=azure_credential)
 
             # Get file name to use in database

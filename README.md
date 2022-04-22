@@ -41,13 +41,15 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
 1. Do managed identity work following [Auth from Azure-hosted apps](https://review.docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps):
     * app service, set managed identity as system-assigned
     * assign role as "Storage Blob Data Contributor", so app service can connect to storage
-    * anything else? PostgreSQL uses config/env variables so this doesn't get managed identity.
+
+1. Set up PostgreSQL
+    * add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
+    * "Allow public access from any Azure service" as we did in previous tutorial. **Can we use managed identity instead?**
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
+    * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_URL, STORAGE_CONTAINER_NAME
     * ssh into app service
     * create the databases with `python manage.py migrate`
-
-1. Set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_URL, STORAGE_CONTAINER_NAME
 
 ## Requirements
 
