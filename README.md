@@ -44,7 +44,7 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
 
 1. Set up PostgreSQL
     * add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
-    * "Allow public access from any Azure service" as we did in previous tutorial, is easiest to do. There is also the option to  **Can we use managed identity instead?** See [Tip 8](#tip-8---postgresql).
+    * "Allow public access from any Azure service" as we did in previous tutorial. **Can we use managed identity?** See [Tip 8](#tip-8---postgresql).
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
     * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_ACCOUNT_NAME, STORAGE_CONTAINER_NAME
@@ -201,12 +201,15 @@ Is there any harm on keeping `exclude_shared_token_cache_credential=True` when d
 
 ### Tip 8 - PostgreSQL
 
-We connect to PostgreSQL with DBNAME, DBHOST, DBPASS, and DBUSER passed as environment variables and used in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be authenticate to connect.
+We connect to PostgreSQL with DBNAME, DBHOST, DBPASS, and DBUSER passed as environment variables and used in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
 
-To be authenticated to connect, we can set the "Allow public access from any Azure service" networking setting, which works but is a bit loose in terms of security. 
+Some ways to deal with networking:
 
-The article [Connect with Managed Identity to Azure Database for PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/howto-connect-with-managed-identity) looks promising but there isn't a way to get a token from DefaultAzureCredential and pass it to DATABASES Django variable, that we can tell. Is there?
+* To allow code in App Service to access PostgreSQL, we set the "Allow public access from any Azure service" networking setting, which works but is a bit loose in terms of security. It allows access to all Azure services.
 
-Finally, there was a new way to create a PostgreSQL in it's own VPN and deal with security that way. This isn't generally available at this time.
+* Create a firewall rule to explicitly add all the outbound IPs of the Azure App Service. See [Create a firewall rule to explicitly allow outbound IPs](https://docs.microsoft.com/en-us/azure/mysql/howto-connect-webapp#solution-2---create-a-firewall-rule-to-explicitly-allow-outbound-ips). This is not a bad fallback to show or mention.
 
+* The article [Connect with Managed Identity to Azure Database for PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/howto-connect-with-managed-identity) looks promising but there isn't a way to get a token from DefaultAzureCredential and pass it to DATABASES Django variable, that we can tell. 
+
+* There is a new way to create a PostgreSQL in it's own VPN and deal with security that way. This isn't generally available at this time.
 
