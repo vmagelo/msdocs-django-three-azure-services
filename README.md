@@ -9,7 +9,7 @@ This is a Python web app using the Django framework with three Azure services: A
 | Storage | Azure Blob Storage* or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-\*Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_URL and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. Perhaps beyond the scope of this sample app.
+\*Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. Perhaps beyond the scope of this sample app.
 
 The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
 
@@ -36,7 +36,7 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
 * check render() lookup on url and make sure they are correct for error conditions, in some cases just use reverse()
 * pull all CSS to [restaurants.css](./static/restaurant.css) and link to from base.html, should be no CSS in other templates
 
-## Deployment (Todo)
+## Deployment
 
 1. Do managed identity work following [Auth from Azure-hosted apps](https://review.docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps):
     * app service, set managed identity as system-assigned
@@ -47,7 +47,7 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
     * "Allow public access from any Azure service" as we did in previous tutorial. **Can we use managed identity instead?**
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
-    * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_URL, STORAGE_CONTAINER_NAME
+    * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_ACCOUNT_NAME, STORAGE_CONTAINER_NAME
     * ssh into app service
     * create the databases with `python manage.py migrate`
 
