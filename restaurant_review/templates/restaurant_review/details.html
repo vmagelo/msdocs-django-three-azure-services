@@ -53,8 +53,8 @@
                         <td>{{ review.review_text }}</td>
                         <td>
                           {% if review.image_name %}
-                            <a href="https://vmagelowebapp.blob.core.windows.net/restaurants/{{review.image_name}}">
-                              <img height="40" src="https://vmagelowebapp.blob.core.windows.net/restaurants/{{review.image_name}}"/>
+                            <a href="https://{{account}}.blob.core.windows.net/{{container}}/{{review.image_name}}">
+                              <img height="40" src="https://{{account}}.blob.core.windows.net/{{container}}/{{review.image_name}}"/>
                             </a>
                           {% endif %}
                         </td>

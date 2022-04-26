@@ -28,7 +28,8 @@ def details(request, id):
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
     except Restaurant.DoesNotExist:
         raise Http404("Restaurant doesn't exist")
-    return render(request, 'restaurant_review/details.html', {'restaurant': restaurant})
+    return render(request, 'restaurant_review/details.html', {'restaurant': restaurant, 
+        'account': os.environ['STORAGE_ACCOUNT_NAME'], 'container': os.environ['STORAGE_CONTAINER_NAME']})
 
 
 def create_restaurant(request):
