@@ -188,7 +188,7 @@ This storage messages in session data. The default is cookie if the `MESSAGE_STO
 
 ### Tip 7
 
-A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `AzureDefaultCredential()`. After some looking around it seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is recommended:
+A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `DefaultAzureCredential()`. After some looking around it seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is recommended:
 
 ```python
 azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
