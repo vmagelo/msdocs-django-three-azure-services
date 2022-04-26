@@ -1,15 +1,15 @@
 # Deploy a Python (Django) web app with PostgreSQL and Blob Storage in Azure
 
-This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be be run locally and then deployed to Azure. 
+This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be run locally and then deployed to Azure. 
 
 | Function      | Local Dev | Azure Hosted |
 | ------------- | --------- | ------------ |
 | Web app | runs locally, e.g., http://127.0.0.1:8000 | runs in App Service, e.g., https://\<app-name>.azurewebsites.net  |
 | Database | Local PostgreSQL instance | Azure PostgreSQL service |
-| Storage | Azure Blob Storage* or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
+| Storage | Azure Blob Storage<sup>1</sup> or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-\*Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. Perhaps beyond the scope of this sample app.
+<sup>1</sup>Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. This is beyond the scope of this sample app.
 
 The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
 
@@ -18,9 +18,9 @@ The assumption is that code doesn't change when moving from dev to Azure-hosted.
 | pattern&nbsp;1 | app service principal <br> add AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET to the *.env* file | app service principal <br> configure app settings for AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET |
 | pattern&nbsp;2 | AD group, developer account<br> login in with `az login` | managed identity<br> configure as shown in [Authentication Azure-hosted app to Azure resources](https://docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps) |
 
-The code doesn't change between pattern 1 and 2, only what goes into *.env* file in local dev case. We are primarily interested in pattern 2 and showing that with managed identity in Azure.
+The code doesn't change between pattern 1 and 2, only what goes into *.env* file in local dev case. We are primarily interested in pattern 2 and showing local authentication to Azure with developer account and authentication in Azure with a managed identity.
 
-See [Tip 7](#tip-7) below for a bit of gotcha using developer account.
+See [Tip 7](#tip-7) below for something to watch out for when using developer account.
 
 Example screenshot:
 
@@ -38,13 +38,20 @@ Propagate changes in restaurant review app back to previous Django tutorials, in
 
 ## Deployment
 
-1. Do managed identity work following [Auth from Azure-hosted apps](https://review.docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps):
-    * app service, set managed identity as system-assigned
-    * assign role as "Storage Blob Data Contributor", so app service can connect to storage
+Create all Azure resources in the same group.
+
+1. Set up App Service.
+    * Set managed identity following [Auth from Azure-hosted apps](https://review.docs.microsoft.com/en-us/azure/developer/python/sdk/authentication-azure-hosted-apps)
+    * Set managed identity as system-assigned
+    * Assign role as "Storage Blob Data Contributor", so app service can connect to storage
 
 1. Set up PostgreSQL
-    * add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
+    * Add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
     * "Allow public access from any Azure service" as we did in previous tutorial. **Can we use managed identity?** See [Tip 8](#tip-8---postgresql).
+
+1. Set up Azure Storage.
+    * Create container "photos".
+    * Set container to "public read". This doesn't mean public write. The web app can write because of the assigned role.
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
     * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_ACCOUNT_NAME, STORAGE_CONTAINER_NAME
@@ -188,7 +195,7 @@ This storage messages in session data. The default is cookie if the `MESSAGE_STO
 
 ### Tip 7
 
-A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `DefaultAzureCredential()`. After some looking around it seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is recommended:
+A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `DefaultAzureCredential()`. It seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is the recommended solution:
 
 ```python
 azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
