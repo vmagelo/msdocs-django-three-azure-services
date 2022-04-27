@@ -9,6 +9,7 @@ from django.contrib import messages
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from requests import RequestException, exceptions
+from azureproject.settings import DATABASES
 
 from restaurant_review.models import Restaurant, Review
 
@@ -16,6 +17,7 @@ from restaurant_review.models import Restaurant, Review
 
 def index(request):
     print('Request for index page received')
+    refresh_token()
 
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
     return render(request, 'restaurant_review/index.html', {'restaurants': restaurants })
@@ -23,6 +25,7 @@ def index(request):
 
 def details(request, id):
     print('Request for restaurant details page received')
+    refresh_token()
 
     try: 
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
@@ -38,6 +41,7 @@ def create_restaurant(request):
     return render(request, 'restaurant_review/create_restaurant.html')
 
 def add_restaurant(request):
+    refresh_token()
     try:
         name = request.POST['restaurant_name']
         street_address = request.POST['street_address']
@@ -57,8 +61,8 @@ def add_restaurant(request):
                 
         return HttpResponseRedirect(reverse('details', args=(restaurant.id,)))
 
-#@csrf_exempt
 def add_review(request, id):
+    refresh_token()
     try: 
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
     except Restaurant.DoesNotExist:
@@ -114,4 +118,15 @@ def add_review(request, id):
         review.image_name = image_name
         Review.save(review)
                 
-    return HttpResponseRedirect(reverse('details', args=(id,)))        
+    return HttpResponseRedirect(reverse('details', args=(id,)))
+
+def refresh_token():
+    # No refresh needed when running locally.
+    if 'WEBSITE_HOSTNAME' in os.environ:
+        # Azure hosted, refresh token that becomes password.
+        azure_credential = DefaultAzureCredential()
+        # Get token for Azure Database for PostgreSQL
+        token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
+        DATABASES['default']['PASSWORD'] = token.token
+        print("Token = " + token.token)
+    return

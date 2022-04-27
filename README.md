@@ -193,6 +193,8 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 This storage messages in session data. The default is cookie if the `MESSAGE_STORAGE` variable is not set.
 
+Todo: Go back to simple passing of "error_message" variable to template. Should be sufficient and have less coding.
+
 ### Tip 7
 
 A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `DefaultAzureCredential()`. It seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is the recommended solution:
