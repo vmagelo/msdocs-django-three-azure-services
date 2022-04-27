@@ -37,8 +37,6 @@ def create_restaurant(request):
 
     return render(request, 'restaurant_review/create_restaurant.html')
 
-
-#@csrf_exempt
 def add_restaurant(request):
     try:
         name = request.POST['restaurant_name']
@@ -55,7 +53,6 @@ def add_restaurant(request):
         restaurant.name = name
         restaurant.street_address = street_address
         restaurant.description = description
-        restaurant.image_name = uuid.uuid4()
         Restaurant.save(restaurant)
                 
         return HttpResponseRedirect(reverse('details', args=(restaurant.id,)))
