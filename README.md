@@ -26,12 +26,12 @@ Example screenshot:
 
 ![Example review list with images](/static/images/Example-reviews.png)
 
-## Propagate Django changes
+## Propagate Django changes?
 
 Propagate changes in restaurant review app back to previous Django tutorials, including:
 
-* csrf token use, don't use exempt in views.py
-* message passing to forms when there is an error (for add review and restaurant), see [views.py](./restaurant_review/views.py) for an example
+* csrf token use, don't use exempt in [views.py](./restaurant_review/views.py)
+* use message passing to forms when there is an error (for add review and restaurant), see [views.py](./restaurant_review/views.py) for an example. Temporary error message is stored in session data.
 * add check of forms looking for blank fields and raise error (for add review and restaurant)
 * check render() lookup on url and make sure they are correct for error conditions, in some cases just use reverse()
 * pull all CSS to [restaurants.css](./static/restaurant.css) and link to from base.html, should be no CSS in other templates
