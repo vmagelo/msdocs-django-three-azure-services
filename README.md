@@ -80,7 +80,7 @@ py -m venv .venv
 .venv/scripts/activate
 ```
 
-Install the dependencies.
+In the virtual environment, install the dependencies.
 
 ```dos
 pip install -r requirements.txt
