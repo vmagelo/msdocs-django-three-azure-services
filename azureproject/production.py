@@ -26,6 +26,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # DBHOST is only the server name, not the full URL
 hostname = os.environ['DBHOST']
+username = os.environ['DBUSER'] + "@" + os.environ['DBHOST']
 
 # Configure Postgres database; the full username for PostgreSQL flexible server is
 # username (not @sever-name).
@@ -34,7 +35,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['DBNAME'],
         'HOST': hostname + ".postgres.database.azure.com",
-        'USER': os.environ['DBUSER'],
+        'USER': username,
         'PASSWORD': 'will be replaced with token' 
     }
 }
