@@ -36,6 +36,6 @@ DATABASES = {
         'NAME': os.environ['DBNAME'],
         'HOST': hostname + ".postgres.database.azure.com",
         'USER': username,
-        'PASSWORD': 'will be replaced with token' 
+        'PASSWORD': 'will be replaced with token in refresh_token() function' 
     }
 }
