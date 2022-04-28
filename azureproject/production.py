@@ -35,7 +35,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['DBNAME'],
         'HOST': hostname + ".postgres.database.azure.com",
-        'USER': username + "@" + hostname,
+        'USER': username,
         'PASSWORD': 'will be replaced with token' 
     }
 }
