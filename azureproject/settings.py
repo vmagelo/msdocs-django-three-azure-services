@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from .get_token import get_token
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,9 +97,10 @@ DATABASES = {
         'NAME': os.environ['DBNAME'],
         'HOST': os.environ['DBHOST'],
         'USER': os.environ['DBUSER'],
-        'PASSWORD': 'will be set in refresh_token() function' 
+        'PASSWORD': 'set with get_token()'
     }
 }
+get_token()
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

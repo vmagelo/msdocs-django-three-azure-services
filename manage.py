@@ -4,6 +4,7 @@ import os
 import sys
 from dotenv import load_dotenv
 
+from azureproject.get_token import get_token
 
 def main():
     """Run administrative tasks."""

@@ -1,5 +1,6 @@
 from .settings import *
 import os
+from get_token import get_token
 
 # Configure the domain name using the environment variable
 # that Azure automatically creates for us.
@@ -36,6 +37,7 @@ DATABASES = {
         'NAME': os.environ['DBNAME'],
         'HOST': hostname + ".postgres.database.azure.com",
         'USER': username,
-        'PASSWORD': 'will be replaced with token in refresh_token() function' 
+        'PASSWORD': 'will be replaced with token in get_token() function' 
     }
 }
+get_token()
