@@ -129,4 +129,7 @@ def refresh_token():
         token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
         DATABASES['default']['PASSWORD'] = token.token
         print("Token = " + token.token)
+    else:
+        # Locally, read password from environment variable.
+        DATABASES['default']['PASSWORD'] = os.environ['DBPASS']
     return

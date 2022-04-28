@@ -96,7 +96,7 @@ DATABASES = {
         'NAME': os.environ['DBNAME'],
         'HOST': os.environ['DBHOST'],
         'USER': os.environ['DBUSER'],
-        'PASSWORD': os.environ['DBPASS'] 
+        'PASSWORD': 'will be set in refresh_token() function' 
     }
 }
 
