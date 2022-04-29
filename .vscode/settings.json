@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/bb881e62-cf77-4d5d-89fb-29d71e930b66/resourceGroups/vmagelo-web-app/providers/Microsoft.Web/sites/vmagelo-web-app",
+    "appService.deploySubpath": "."
+}
