@@ -47,7 +47,8 @@ Create all Azure resources in the same group.
 
 1. Set up PostgreSQL
     * Add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
-    * "Allow public access from any Azure service" as we did in previous tutorial. **Can we use managed identity?** See [Tip 8](#tip-8---postgresql).
+    * "Allow public access from any Azure service" as we did in previous tutorial. See [Tip 8](#tip-8---postgresql---firewalls)
+    * Configure managed identity. ** See [Tip 9](#tip-9---managed-identity-with-azure-postgresql)
 
 1. Set up Azure Storage.
     * Create container "photos".
@@ -71,7 +72,7 @@ The [requirements.txt](./requirements.txt) has the following packages:
 | [azure-blob-storage](https://pypi.org/project/azure-storage/) | Microsoft Azure Storage SDK for Python |
 | [azure-identity](https://pypi.org/project/azure-identity/) | Microsoft Azure Identity Library for Python |
 
-## How to run (Windows)
+## How to run locally
 
 Create a virtual environment.
 
@@ -98,7 +99,7 @@ Run the app.
 python manage.py runserver
 ```
 
-## Tips for development (Windows)
+## Tips and trick learned during development
 
 ### Tip 1
 
@@ -208,21 +209,19 @@ Another workaround, not recommended in general, is to just add to *.env* file AZ
 
 Is there any harm on keeping `exclude_shared_token_cache_credential=True` when deploying?
 
-### Tip 8 - PostgreSQL
+### Tip 8 - PostgreSQL - firewalls
 
 We connect to PostgreSQL with DBNAME, DBHOST, and DBUSER passed as environment variables and used in [development.py](./azureproject/development.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
 
 Some ways to deal with networking:
 
-* To allow code in App Service to access PostgreSQL, we set the "Allow public access from any Azure service" networking setting, which works but is a bit loose in terms of security. It allows access to all Azure services.
+* **THIS IS WE WILL SHOW in TUTORIAL*** To allow code in App Service to access PostgreSQL, we set the "Allow public access from any Azure service" networking setting, which works but is a bit loose in terms of security. It allows access to all Azure services.
 
 * Create a firewall rule to explicitly add all the outbound IPs of the Azure App Service. See [Create a firewall rule to explicitly allow outbound IPs](https://docs.microsoft.com/en-us/azure/mysql/howto-connect-webapp#solution-2---create-a-firewall-rule-to-explicitly-allow-outbound-ips). This is not a bad fallback to show or mention.
 
-* The article [Connect with Managed Identity to Azure Database for PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/howto-connect-with-managed-identity) looks promising but there isn't a way to get a token from DefaultAzureCredential and pass it to DATABASES Django variable, that we can tell. 
-
 * There is a new way to create a PostgreSQL in it's own VPN and deal with security that way. This isn't generally available at this time.
 
-### Tip 9 - Managed Identity with Azure PostgresSQL
+### Tip 9 - Managed Identity with Azure PostgreSQL
 
 It's tricky. Trickier than managed identity with storage. The goal is to avoid having to specify a password and let Azure take care of it. Think about the previous App Service / PostgreSQL tutorial where we set DBPASS as a configuration parameter for the App Service. We want to avoid that.
 
@@ -230,7 +229,7 @@ Some references:
 
 * [Azure databases](https://docs.microsoft.com/azure/app-service/tutorial-connect-msi-azure-database) in App Service documentation. Some things to watch out for:
    
-     * Only seems to work with PostgeSQL single server. Managed identity supported for flexible?
+     * Only seems to work with PostgeSQL single server. **Managed identity supported for flexible?**
      * Commands in step 2 where you use psql to login in we never got to work. We did get access with Azure Data Studio. It could be that the token is too big for password field.
 
 * [Configure Azure AD Integration](https://docs.microsoft.com/azure/postgresql/howto-configure-sign-in-aad-authentication) in the PostgreSQL documentation.
@@ -240,7 +239,7 @@ Some references:
 
 * [Connect with Managed Identity](https://docs.microsoft.com/azure/postgresql/howto-connect-with-managed-identity) shows an C# example and gives insight into how the tokens are generated and what endpoint you call to get token.
 
-The challenge with the references  is that they show manually creating connection string. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use Django or Flask, the connection to the database is abstracted and handled for us via `DATABASES` global variable. This means a little more code to deal with tokens to refresh the password part of the `DATABASES` variable.  For example,
+The challenge with the references  is that they show manually creating connection strings. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use frameworks like Django or Flask, the connection to the database is abstracted and handled for us via `DATABASES` global variable. This means a little more code to deal with tokens to refresh the password part of the `DATABASES` variable.  For example,
 
 ```python
 def get_token():
@@ -257,7 +256,7 @@ def get_token():
     return
 ```
 
-Then, there is the complicated setting up of PostgreSQL to use managed ID, which goes something like this:
+Then, there is the complicated setting up of PostgreSQL to use managed ID, which goes something like this (from the first reference above):
 
 1. Grant a user account to be Active Directory Admin. (Portal or CLI)
 1. Get application ID of the system-assigned identity. (Portal or CLI). 
@@ -267,18 +266,21 @@ Then, there is the complicated setting up of PostgreSQL to use managed ID, which
     SET aad_validate_oids_in_tenant = off;
     CREATE ROLE <postgresql-user-name> WITH LOGIN PASSWORD '<application-id-of-system-assigned-identity>' IN ROLE azure_ad_user;
     ```
-    For example, create a username like "webappuser" with the password as the application id of the system-assigned identity.
+    For example, create a username like "webappuser" with the password as the application id of the system-assigned identity. This isn't at all obvious or intuitive, but that's how it works.
 1. In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
 
 ### Tip 10: Refactor settings files
 
-Before, we had settings.py and production.py. Now, we have [settings.py](./azureproject/settings.py) - common to all environments, [development.py](./azureproject/development.py) - for the dev or local environment, and [production.py](./azureproject/production.py) - for production / deployment. 
+Before, we had just settings.py and production.py. Now, we have [settings.py](./azureproject/settings.py) - common to all environments, [development.py](./azureproject/development.py) - for the dev or local environment, and [production.py](./azureproject/production.py) - for production / deployment. 
 
-> **_NOTE:_**  In the process of doing this, a circular reference was introduced but not noticed. So, debug=true for local environment was fine. But only debug=true would work in production, which is a no-no. With debug=false, kept getting 500 error with no explanation in the logs.  `ALLOWED_HOSTS` not set appropriately can be a common 500 error in production. Then, this [StackOverflow answer](https://stackoverflow.com/questions/4970489/what-could-cause-a-django-error-when-debug-false-that-isnt-there-when-debug-tru) about circular references saved the day.
+> **_NOTE:_**  In the process of doing this, a circular reference was introduced but not noticed. So, debug=true for local environment was fine. But only debug=true would work in production, which is a no-no. With debug=false, kept getting 500 error with no explanation in the logs.  `ALLOWED_HOSTS` not set appropriately can be a common 500 error in production. But after ruling that out, we were at wits' end until we found this [StackOverflow answer](https://stackoverflow.com/questions/4970489/what-could-cause-a-django-error-when-debug-false-that-isnt-there-when-debug-tru) about circular references, which saved the day.
 
-### Tip 11: Whitenoise
+### Tip 11: WhiteNoise static file serving
 
-Decided to use WhitenNoise for both local and deployed web app. See [Using WhiteNoise in development](http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development). It makes it easier to have all `INSTALLED_APPS` and `MIDDLEWARE` in the base settings.py file.
+We decided to use WhitenNoise for both local and deployed web app. See [Using WhiteNoise in development](http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development). It makes it easier to have all `INSTALLED_APPS` and `MIDDLEWARE` in the base settings.py file.
+
+White WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/8da29e2cb651a79/antenv/lib/python3.9/site-packages/whitenoise/base.py:115: UserWarning: No directory at: /tmp/8da29e2cb651a79/staticfiles/". This isn't a blocker as explained by this [GitHub issue](https://github.com/evansd/whitenoise/issues/215). 
+
 
 
 
