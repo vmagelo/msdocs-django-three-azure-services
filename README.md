@@ -54,7 +54,7 @@ Create all Azure resources in the same group.
     * Set container to "public read". This doesn't mean public write. The web app can write because of the assigned role.
 
 1. Deploy the app with one of the methods: VS Code, local git, ZIP.
-    * set app service configuration variables for: DBNAME, DBHOST, DBUSER, DBPASS, STORAGE_ACCOUNT_NAME, STORAGE_CONTAINER_NAME
+    * set app service configuration variables for: DBNAME, DBHOST, DBUSER, STORAGE_ACCOUNT_NAME, STORAGE_CONTAINER_NAME
     * ssh into app service
     * create the databases with `python manage.py migrate`
 
@@ -210,7 +210,7 @@ Is there any harm on keeping `exclude_shared_token_cache_credential=True` when d
 
 ### Tip 8 - PostgreSQL
 
-We connect to PostgreSQL with DBNAME, DBHOST, DBPASS, and DBUSER passed as environment variables and used in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
+We connect to PostgreSQL with DBNAME, DBHOST, and DBUSER passed as environment variables and used in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
 
 Some ways to deal with networking:
 
@@ -221,4 +221,24 @@ Some ways to deal with networking:
 * The article [Connect with Managed Identity to Azure Database for PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/howto-connect-with-managed-identity) looks promising but there isn't a way to get a token from DefaultAzureCredential and pass it to DATABASES Django variable, that we can tell. 
 
 * There is a new way to create a PostgreSQL in it's own VPN and deal with security that way. This isn't generally available at this time.
+
+### Tip 9 - Managed Identity with Azure PostgresSQL
+
+It's tricky. Trickier than managed identity with storage. The goal is to avoid having to specify a password and let Azure take care of it. Think about the previous App Service / PostgreSQL tutorial where we set DBPASS as a configuration parameter for the App Service. We wan to avoid that.
+
+Some references:
+
+* [Azure databases](https://docs.microsoft.com/azure/app-service/tutorial-connect-msi-azure-database) in App Service documentation. Some things to watch out for:
+   
+     * Only seems to work with PostgeSQL single server. Managed identity supported for flexible?
+     * Commands in step 2 where you use psql to login in we never got to work. We did get access with Azure Data Studio. It could be that the token is too big for password field.
+
+* [Configure Azure AD Integration](https://docs.microsoft.com/azure/postgresql/howto-configure-sign-in-aad-authentication) in the PostgreSQL documentation.
+
+    * This article gives hint that [PGPASSWORD](https://www.postgresql.org/docs/current/libpq-envars.html) needs to be used when passing tokens for password because they are too long.
+    * This article show how to set Azure Active Directory admin for PostgreSQL in the portal. So, in a tutorial, we would have at least instructions for portal and CLI.
+
+* [Connect with Managed Identity](https://docs.microsoft.com/azure/postgresql/howto-connect-with-managed-identity) shows an C# example and gives insight into how the tokens are generated and what endpoint you call to get token.
+
+The challenge with the references given is that they show manually creating connection string. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use Django or Flask, the connection to the database is abstracted and handled for us. This means a little more code to deal with tokens.
 
