@@ -17,6 +17,8 @@ from restaurant_review.models import Restaurant, Review
 
 def index(request):
     print('Request for index page received')
+    if ALLOWED_HOSTS in os.environ:
+        print('ALLOWED_HOSTS = ' + os.environ['ALLOWED_HOSTS'])
     get_token()
 
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
