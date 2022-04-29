@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-import os
 from .get_token import get_token
 
 print("Common settings called...")
@@ -31,6 +30,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+MIDDLEWARE = [                                                                   
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # only used in production
+    'django.contrib.sessions.middleware.SessionMiddleware',                      
+    'django.middleware.common.CommonMiddleware',                                 
+    'django.middleware.csrf.CsrfViewMiddleware',                                 
+    'django.contrib.auth.middleware.AuthenticationMiddleware',                   
+    'django.contrib.messages.middleware.MessageMiddleware',                      
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',                    
 ]
 
 ROOT_URLCONF = 'azureproject.urls'
@@ -75,11 +85,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Default primary key field type
