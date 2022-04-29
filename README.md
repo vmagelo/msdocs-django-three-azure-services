@@ -277,9 +277,9 @@ Before, we had just settings.py and production.py. Now, we have [settings.py](./
 
 ### Tip 11: WhiteNoise static file serving
 
-We decided to use WhitenNoise for both local and deployed web app. See [Using WhiteNoise in development](http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development). It makes it easier to have all `INSTALLED_APPS` and `MIDDLEWARE` in the base settings.py file.
+We decided to use WhiteNoise for both local and deployed web app. See [Using WhiteNoise in development](http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development). It makes it easier to have all `INSTALLED_APPS` and `MIDDLEWARE` in the base settings.py file.
 
-White WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/8da29e2cb651a79/antenv/lib/python3.9/site-packages/whitenoise/base.py:115: UserWarning: No directory at: /tmp/8da29e2cb651a79/staticfiles/". This isn't a blocker as explained by this [GitHub issue](https://github.com/evansd/whitenoise/issues/215). 
+With WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/8da29e2cb651a79/antenv/lib/python3.9/site-packages/whitenoise/base.py:115: UserWarning: No directory at: /tmp/8da29e2cb651a79/staticfiles/". This isn't a blocker as explained by this [GitHub issue](https://github.com/evansd/whitenoise/issues/215). 
 
 
 
