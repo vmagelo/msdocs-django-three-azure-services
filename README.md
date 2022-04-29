@@ -185,7 +185,7 @@ In the template redirected to put:
 {% endif %}
 ```
 
-The message backend is set in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) with:
+The message backend is set in [settings.py](./azureproject/settings.py) with:
 
 ```python
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -210,7 +210,7 @@ Is there any harm on keeping `exclude_shared_token_cache_credential=True` when d
 
 ### Tip 8 - PostgreSQL
 
-We connect to PostgreSQL with DBNAME, DBHOST, and DBUSER passed as environment variables and used in [settings.py](./azureproject/settings.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
+We connect to PostgreSQL with DBNAME, DBHOST, and DBUSER passed as environment variables and used in [development.py](./azureproject/development.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
 
 Some ways to deal with networking:
 
@@ -269,3 +269,16 @@ Then, there is the complicated setting up of PostgreSQL to use managed ID, which
     ```
     For example, create a username like "webappuser" with the password as the application id of the system-assigned identity.
 1. In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
+
+### Tip 10: Refactor settings files
+
+Before, we had settings.py and production.py. Now, we have [settings.py](./azureproject/settings.py) - common to all environments, [development.py](./azureproject/development.py) - for the dev or local environment, and [production.py](./azureproject/production.py) - for production / deployment. 
+
+> **_NOTE:_**  In the process of doing this, a circular reference was introduced but not noticed. So, debug=true for local environment was fine. But only debug=true would work in production, which is a no-no. With debug=false, kept getting 500 error with no explanation in the logs.  `ALLOWED_HOSTS` not set appropriately can be a common 500 error in production. Then, this [StackOverflow answer](https://stackoverflow.com/questions/4970489/what-could-cause-a-django-error-when-debug-false-that-isnt-there-when-debug-tru) about circular references saved the day.
+
+### Tip 11: Whitenoise
+
+Decided to use WhitenNoise for both local and deployed web app. See [Using WhiteNoise in development](http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development). It makes it easier to have all `INSTALLED_APPS` and `MIDDLEWARE` in the base settings.py file.
+
+
+
