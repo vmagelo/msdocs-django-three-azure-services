@@ -6,6 +6,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
+STATIC_URL = 'static/'
+
 # Configure Postgres database for local development
 #   Set these environment variables in the .env file for this project.  
 DATABASES = {
