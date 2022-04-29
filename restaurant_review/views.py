@@ -22,6 +22,7 @@ def index(request):
 
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
     print('Restaurants object created')
+    print(restaurants)
     return render(request, 'restaurant_review/index.html', {'restaurants': restaurants })
 
 
