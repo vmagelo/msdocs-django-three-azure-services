@@ -38,6 +38,7 @@ STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))
 
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = True
+WHITENOISE_MANIFEST_STRICT = False
 
 ROOT_URLCONF = 'azureproject.urls'
 
