@@ -94,9 +94,3 @@ DATABASES = {
     }
 }
 get_token()
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
-STATIC_URL = 'static/'
