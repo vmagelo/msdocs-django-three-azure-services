@@ -267,7 +267,11 @@ Then, there is the complicated setting up of PostgreSQL to use managed ID, which
     CREATE ROLE <postgresql-user-name> WITH LOGIN PASSWORD '<application-id-of-system-assigned-identity>' IN ROLE azure_ad_user;
     ```
     For example, create a username like "webappuser" with the password as the application id of the system-assigned identity. This isn't at all obvious or intuitive, but that's how it works.
+
+    You can log in with psql (via cloud shell is easiest), Azure Data Studio, or any tool that manages PostgreSQL.
+
 1. In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
+1. In the App Service set the configuration setting `DBUSER=webappuser`. There is no `DBPASS` setting.
 
 ### Tip 10: Refactor settings files
 
