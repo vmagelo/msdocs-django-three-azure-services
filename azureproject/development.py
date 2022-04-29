@@ -4,6 +4,8 @@ from .settings import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 ALLOWED_HOSTS = []
 
 # Configure Postgres database for local development
