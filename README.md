@@ -224,7 +224,7 @@ Some ways to deal with networking:
 
 ### Tip 9 - Managed Identity with Azure PostgresSQL
 
-It's tricky. Trickier than managed identity with storage. The goal is to avoid having to specify a password and let Azure take care of it. Think about the previous App Service / PostgreSQL tutorial where we set DBPASS as a configuration parameter for the App Service. We wan to avoid that.
+It's tricky. Trickier than managed identity with storage. The goal is to avoid having to specify a password and let Azure take care of it. Think about the previous App Service / PostgreSQL tutorial where we set DBPASS as a configuration parameter for the App Service. We want to avoid that.
 
 Some references:
 
@@ -240,5 +240,32 @@ Some references:
 
 * [Connect with Managed Identity](https://docs.microsoft.com/azure/postgresql/howto-connect-with-managed-identity) shows an C# example and gives insight into how the tokens are generated and what endpoint you call to get token.
 
-The challenge with the references given is that they show manually creating connection string. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use Django or Flask, the connection to the database is abstracted and handled for us. This means a little more code to deal with tokens.
+The challenge with the references  is that they show manually creating connection string. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use Django or Flask, the connection to the database is abstracted and handled for us via `DATABASES` global variable. This means a little more code to deal with tokens to refresh the password part of the `DATABASES` variable.  For example,
 
+```python
+def get_token():
+    if 'WEBSITE_HOSTNAME' in os.environ:        
+        from azureproject.production import DATABASES
+        # Azure hosted, refresh token that becomes password.
+        azure_credential = DefaultAzureCredential()
+        token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
+        DATABASES['default']['PASSWORD'] = token.token
+    else:
+        # Locally, read password from environment variable.
+        from azureproject.development import DATABASES
+        DATABASES['default']['PASSWORD'] = os.environ['DBPASS']
+    return
+```
+
+Then, there is the complicated setting up of PostgreSQL to use managed ID, which goes something like this:
+
+1. Grant a user account to be Active Directory Admin. (Portal or CLI)
+1. Get application ID of the system-assigned identity. (Portal or CLI). 
+    * In portal, you have to go to Active Directory resource, find the web application, and get this value.
+1. Log in to the PostgreSQL database with the Active Directory Admin and create a new user and role:
+    ```sql
+    SET aad_validate_oids_in_tenant = off;
+    CREATE ROLE <postgresql-user-name> WITH LOGIN PASSWORD '<application-id-of-system-assigned-identity>' IN ROLE azure_ad_user;
+    ```
+    For example, create a username like "webappuser" with the password as the application id of the system-assigned identity.
+1. In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
