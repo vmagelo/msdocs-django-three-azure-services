@@ -13,11 +13,9 @@ def get_token():
         # Get token for Azure Database for PostgreSQL
         token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
         DATABASES['default']['PASSWORD'] = token.token
-        print(DATABASES['default'])
     else:
         # Locally, read password from environment variable.
         from azureproject.development import DATABASES
         DATABASES['default']['PASSWORD'] = os.environ['DBPASS']
         print("Read password env variable.")
-        print(DATABASES['default'])
     return
