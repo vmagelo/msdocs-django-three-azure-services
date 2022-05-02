@@ -3,6 +3,7 @@ from azure.identity import DefaultAzureCredential
 import django.conf as conf
 
 def get_token():
+    if 'WEBSITE_HOSTNAME' in os.environ:   
         # Azure hosted, refresh token that becomes password.
         azure_credential = DefaultAzureCredential()
         # Get token for Azure Database for PostgreSQL
