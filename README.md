@@ -289,11 +289,11 @@ With WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/
 
 Here are things to try:
 
-* Test first locally "python manage.py runserver" if you've made coding changes, even if you think they are not a problem. It will save a bad deploy and time wasted if you have a syntax error or coding problem.
+* Test first locally `python manage.py runserver` if you've made coding changes, even if you think they are not a problem. It will save a bad deploy and time wasted if you have a syntax error or coding problem.
 
 * After deployment (say from Visual Studio Code, which is generally the easiest), check the deployment logs. At first, you see two entries for "pending". When those become one "success" entry the deployment is done. This is generally the same time that Visual Studio Code reports back that the deployment is done. However, it still may take an additional few minutes for the code to really make it to the App Service. 
 
-* Keep the log stream open in a browser tab. Check that the container creation didn't fail, which happens if you have a coding error. If it builds, hit the web site and then check the log. Print statements can help here.
+* Keep the log stream open in a browser tab. Check that the container creation didn't fail, which happens if you have a coding error. If container builds, hit the web site and then check the log stream. Print statements can help here.
 
 * Note that for troubleshooting [DEBUG_PROPAGATE_EXCEPTIONS](https://docs.djangoproject.com/en/4.0/ref/settings/#debug-propagate-exceptions) can be useful to switch to True.
 
@@ -301,10 +301,10 @@ Here are things to try:
 
 * Read the Django tips on the [Oryx GitHub page](https://github.com/microsoft/Oryx/wiki/Django-Tips). Oryx is the build system used to compile Django source code into runnable artifacts in App Service.
 
-* When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a lot of problems.
+* When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a broken web app returning 500.
 
      * `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
-     * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. It's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
+     * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. Locally, it's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
      * See the [Troubleshooting WhiteNoise backend](http://whitenoise.evans.io/en/stable/django.html#troubleshooting-the-whitenoise-storage-backend) for more tips.
-     * If you get the error `ValueError: Missing staticfiles manifest entry for …' try running `python manage.py findstatic --verbosity 2 filename` in the SSH window for the App Service.
+     * If you get the error 'ValueError: Missing staticfiles manifest entry for …' try running `python manage.py findstatic --verbosity 2 filename` in the SSH of the App Service.
      * For `STATICFILES_STORAGE` we don't need the `Manifest` part, which is overkill for sample. The `Compressed` part of class name just create .gz files in static file location. 
