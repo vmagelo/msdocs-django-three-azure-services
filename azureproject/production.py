@@ -11,7 +11,7 @@ DEBUG = False
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 # DBHOST is only the server name, not the full URL
 hostname = os.environ['DBHOST']
