@@ -285,6 +285,19 @@ We decided to use WhiteNoise for both local and deployed web app. See [Using Whi
 
 With WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/8da29e2cb651a79/antenv/lib/python3.9/site-packages/whitenoise/base.py:115: UserWarning: No directory at: /tmp/8da29e2cb651a79/staticfiles/". This isn't a blocker as explained by this [GitHub issue](https://github.com/evansd/whitenoise/issues/215). 
 
+When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a broken web app returning 500.
+
+* `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
+
+* When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. Locally, it's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
+
+* See the [Troubleshooting WhiteNoise backend](http://whitenoise.evans.io/en/stable/django.html#troubleshooting-the-whitenoise-storage-backend) for more tips.
+
+* If you get the error 'ValueError: Missing staticfiles manifest entry for …' try running `python manage.py findstatic --verbosity 2 filename` in the SSH of the App Service.
+
+* For `STATICFILES_STORAGE` we don't need the `Manifest` part, which is overkill for sample. The `Compressed` part of class name just create .gz files in static file location. 
+
+
 ### Tip 12: Troubleshooting deployment
 
 Here are things to try:
@@ -300,11 +313,3 @@ Here are things to try:
 * `Debug = False` should be always on for production settings, but for troubleshooting, setting to `True` may help if you're stuck.
 
 * Read the Django tips on the [Oryx GitHub page](https://github.com/microsoft/Oryx/wiki/Django-Tips). Oryx is the build system used to compile Django source code into runnable artifacts in App Service.
-
-* When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a broken web app returning 500.
-
-     * `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
-     * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. Locally, it's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
-     * See the [Troubleshooting WhiteNoise backend](http://whitenoise.evans.io/en/stable/django.html#troubleshooting-the-whitenoise-storage-backend) for more tips.
-     * If you get the error 'ValueError: Missing staticfiles manifest entry for …' try running `python manage.py findstatic --verbosity 2 filename` in the SSH of the App Service.
-     * For `STATICFILES_STORAGE` we don't need the `Manifest` part, which is overkill for sample. The `Compressed` part of class name just create .gz files in static file location. 
