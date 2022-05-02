@@ -229,7 +229,7 @@ Some references:
 
 * [Azure databases](https://docs.microsoft.com/azure/app-service/tutorial-connect-msi-azure-database) in App Service documentation. Some things to watch out for:
    
-     * Only seems to work with PostgeSQL single server. **Managed identity supported for flexible?**
+     * Only seems to work with PostgeSQL single server. **Managed identity not supported for flexible?**
      * Commands in step 2 where you use psql to login in we never got to work. We did get access with Azure Data Studio. It could be that the token is too big for password field.
 
 * [Configure Azure AD Integration](https://docs.microsoft.com/azure/postgresql/howto-configure-sign-in-aad-authentication) in the PostgreSQL documentation.
@@ -239,29 +239,30 @@ Some references:
 
 * [Connect with Managed Identity](https://docs.microsoft.com/azure/postgresql/howto-connect-with-managed-identity) shows an C# example and gives insight into how the tokens are generated and what endpoint you call to get token.
 
-The challenge with the references  is that they show manually creating connection strings. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use frameworks like Django or Flask, the connection to the database is abstracted and handled for us via `DATABASES` global variable. This means a little more code to deal with tokens to refresh the password part of the `DATABASES` variable.  For example,
+The general challenge/problem with the references  is that they show manually creating connection strings. For Python, that is using package `psycopg2-binary` and calling `psycopg2.connect(conn_string)`. When we use frameworks like Django or Flask, the connection to the database is abstracted and handled for us via `DATABASES` global variable. This means a little more code to deal with tokens to refresh the password part of the `DATABASES` variable.  For example,
 
 ```python
+import os
+from azure.identity import DefaultAzureCredential
+import django.conf as conf
+
 def get_token():
-    if 'WEBSITE_HOSTNAME' in os.environ:        
-        from azureproject.production import DATABASES
-        # Azure hosted, refresh token that becomes password.
+    if 'WEBSITE_HOSTNAME' in os.environ:   
         azure_credential = DefaultAzureCredential()
         token = azure_credential.get_token("https://ossrdbms-aad.database.windows.net")
-        DATABASES['default']['PASSWORD'] = token.token
+        conf.settings.DATABASES['default']['PASSWORD'] = token.token
     else:
         # Locally, read password from environment variable.
-        from azureproject.development import DATABASES
-        DATABASES['default']['PASSWORD'] = os.environ['DBPASS']
+        conf.settings.DATABASES['default']['PASSWORD'] = os.environ['DBPASS']
     return
 ```
 
-Then, there is the complicated setting up of PostgreSQL to use managed ID, which goes something like this (from the first reference above):
+Then, there is the complicated process of setting up of PostgreSQL to use managed ID, which goes something like this (from the first reference above):
 
 1. Grant a user account to be Active Directory Admin. (Portal or CLI)
 1. Get application ID of the system-assigned identity. (Portal or CLI). 
     * In portal, you have to go to Active Directory resource, find the web application, and get this value.
-1. Log in to the PostgreSQL database with the Active Directory Admin and create a new user and role:
+1. Log in to the PostgreSQL database with the Active Directory Admin and create a new user and role. (Start from Portal or CLI)
     ```sql
     SET aad_validate_oids_in_tenant = off;
     CREATE ROLE <postgresql-user-name> WITH LOGIN PASSWORD '<application-id-of-system-assigned-identity>' IN ROLE azure_ad_user;
@@ -270,8 +271,9 @@ Then, there is the complicated setting up of PostgreSQL to use managed ID, which
 
     You can log in with psql (via cloud shell is easiest), Azure Data Studio, or any tool that manages PostgreSQL.
 
-1. In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
-1. In the App Service set the configuration setting `DBUSER=webappuser`. There is no `DBPASS` setting.
+    In the connection string, be careful with username. It has to be webappuser@postgresql-server-name.
+
+1. In the App Service set the configuration setting `DBUSER=webappuser`. There is no `DBPASS` setting. (Portal, VS Code, or CLI)
 
 ### Tip 10: Refactor settings files
 
