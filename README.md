@@ -310,6 +310,6 @@ Here are things to try:
 
 * Note that for troubleshooting [DEBUG_PROPAGATE_EXCEPTIONS](https://docs.djangoproject.com/en/4.0/ref/settings/#debug-propagate-exceptions) can be useful to switch to True.
 
-* `Debug = False` should be always on for production settings, but for troubleshooting, setting to `True` may help if you're stuck.
+* `Debug = False` should be always on for production settings, but for troubleshooting, setting to `True` may help if you're stuck. In particular, if your code has a circular import, it will only be flagged when `Debug=False`. 
 
 * Read the Django tips on the [Oryx GitHub page](https://github.com/microsoft/Oryx/wiki/Django-Tips). Oryx is the build system used to compile Django source code into runnable artifacts in App Service.
