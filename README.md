@@ -285,6 +285,23 @@ We decided to use WhiteNoise for both local and deployed web app. See [Using Whi
 
 With WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/8da29e2cb651a79/antenv/lib/python3.9/site-packages/whitenoise/base.py:115: UserWarning: No directory at: /tmp/8da29e2cb651a79/staticfiles/". This isn't a blocker as explained by this [GitHub issue](https://github.com/evansd/whitenoise/issues/215). 
 
+### Tip 12: Troubleshooting deployment
 
+Here are things to try:
 
+* Test first locally "python manage.py runserver" if you've made coding changes, even if you think they are not a problem. It will save a bad deploy and time wasted if you have a syntax error or coding problem.
 
+* After deployment (say from Visual Studio Code, which is generally the easiest), check the deployment logs. At first, you see two entries for "pending". When those become one "success" entry the deployment is done. This is generally the same time that Visual Studio Code reports back that the deployment is done. However, it still may take an additional few minutes for the code to really make it to the App Service. 
+
+* Keep the log stream open in a browser tab. Check that the container creation didn't fail, which happens if you have a coding error. If it builds, hit the web site and then check the log. Print statements can help here.
+
+* Note that for troubleshooting [DEBUG_PROPAGATE_EXCEPTIONS](https://docs.djangoproject.com/en/4.0/ref/settings/#debug-propagate-exceptions) can be useful to switch to True.
+
+* `Debug = False` should be always on for production settings, but for troubleshooting, setting to `True` may help if you're stuck.
+
+* Read the Django tips on the [Oryx GitHub page](https://github.com/microsoft/Oryx/wiki/Django-Tips). Oryx is the build system used to compile Django source code into runnable artifacts in App Service.
+
+* When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a lot of problems.
+
+     * `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
+     * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. It's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
