@@ -305,3 +305,6 @@ Here are things to try:
 
      * `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
      * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. It's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
+     * See the [Troubleshooting WhiteNoise backend](http://whitenoise.evans.io/en/stable/django.html#troubleshooting-the-whitenoise-storage-backend) for more tips.
+     * If you get the error `ValueError: Missing staticfiles manifest entry for …' try running `python manage.py findstatic --verbosity 2 filename` in the SSH window for the App Service.
+     * For `STATICFILES_STORAGE` we don't need the `Manifest` part, which is overkill for sample. The `Compressed` part of class name just create .gz files in static file location. 
