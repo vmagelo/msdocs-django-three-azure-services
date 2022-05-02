@@ -21,8 +21,8 @@ def index(request):
     print('Token fetched.')
 
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
-    print('Restaurants object created')
     print(restaurants)
+    print("ALLOWED_HOST = " + os.environ['ALLOWED_HOSTS'])
     return render(request, 'restaurant_review/index.html', {'restaurants': restaurants })
 
 
