@@ -287,7 +287,9 @@ With WhiteNoise, you may see this kind of warning in the deployment logs: "/tmp/
 
 When running WhiteNoise, you could spend a lot of time troubleshooting errors and missing images. In particular, when `Debug=True` used in production (a no-no, but just for testing), certain errors are masked and the web app works fine. Set `Debug=False` and suddenly you have a broken web app returning 500.
 
-* `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case.
+* `STATICFILES_STORAGE` has a bunch of possible options. When set to `whitenoise.storage.CompressedStaticFilesStorage` you are using WhiteNoise and `python manage.py collectstatic` needs to be run. When deploying through Visual Studio Code, that is the case. The `SCM_DO_BUILD_DURING_DEPLOYMENT` setting is `1/true` in this case.
+
+     * See [Customize build automation](https://docs.microsoft.com/azure/app-service/configure-language-python#customize-build-automation): when manage.py is found, then `manage.py collectstatic` is run unless `DISABLE_COLLECTSTATIC` is set to `true`.
 
 * When running locally, you can also use `whitenoise.storage.CompressedStaticFilesStorage` but you have to then run `python manage collectstatic` yourself. Locally, it's easier to just use `django.contrib.staticfiles.storage.StaticFilesStorage`.
 
