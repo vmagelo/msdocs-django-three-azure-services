@@ -111,6 +111,9 @@ env.bak/
 venv.bak/
 __azurite*
 
+# Keys
+*.pem
+
 # Spyder project settings
 .spyderproject
 .spyproject

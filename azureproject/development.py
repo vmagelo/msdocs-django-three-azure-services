@@ -3,7 +3,7 @@ from .settings import *
 from .get_token import get_token
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Don't use Whitenoise to avoid having to run collectstatic first.
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

@@ -89,9 +89,15 @@ def add_review(request, id):
                 return HttpResponseRedirect(reverse('details', args=(id,)))  
 
             # Create client
+            if 'WEBSITE_HOSTNAME' in os.environ:   
+                account_url = "https://%s.blob.core.windows.net/" % os.environ['STORAGE_ACCOUNT_NAME']
+            else:
+                account_url = os.environ['STORAGE_ACCOUNT_NAME']
+                print("account_url = " + account_url)
+
             azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
             blob_service_client = BlobServiceClient(
-                account_url="https://%s.blob.core.windows.net/" % os.environ['STORAGE_ACCOUNT_NAME'],
+                account_url=account_url,
                 credential=azure_credential)
 
             # Get file name to use in database
