@@ -53,8 +53,8 @@
                         <td>{{ review.review_text }}</td>
                         <td>
                           {% if review.image_name %}
-                            <a href="https://{{account}}.blob.core.windows.net/{{container}}/{{review.image_name}}">
-                              <img height="40" src="https://{{account}}.blob.core.windows.net/{{container}}/{{review.image_name}}"/>
+                            <a href="{{image_path}}/{{review.image_name}}">
+                              <img height="40" src="{{image_path}}/{{review.image_name}}"/>
                             </a>
                           {% endif %}
                         </td>

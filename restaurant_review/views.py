@@ -26,12 +26,16 @@ def details(request, id):
     print('Request for restaurant details page received')
     get_token()
 
+    # Get account_url based on environment
+    account_url = get_account_url()
+    image_path = account_url + "/" + os.environ['STORAGE_CONTAINER_NAME']
+
     try: 
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
     except Restaurant.DoesNotExist:
         raise Http404("Restaurant doesn't exist")
     return render(request, 'restaurant_review/details.html', {'restaurant': restaurant, 
-        'account': os.environ['STORAGE_ACCOUNT_NAME'], 'container': os.environ['STORAGE_CONTAINER_NAME']})
+        'image_path': image_path})
 
 
 def create_restaurant(request):
@@ -88,13 +92,10 @@ def add_review(request, id):
                 messages.add_message(request, messages.INFO, 'Image too big, try again.')
                 return HttpResponseRedirect(reverse('details', args=(id,)))  
 
-            # Create client
-            if 'WEBSITE_HOSTNAME' in os.environ:   
-                account_url = "https://%s.blob.core.windows.net/" % os.environ['STORAGE_ACCOUNT_NAME']
-            else:
-                account_url = os.environ['STORAGE_ACCOUNT_NAME']
-                print("account_url = " + account_url)
+            # Get account_url based on environment
+            account_url = get_account_url()
 
+            # Create client
             azure_credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
             blob_service_client = BlobServiceClient(
                 account_url=account_url,
@@ -124,3 +125,9 @@ def add_review(request, id):
         Review.save(review)
                 
     return HttpResponseRedirect(reverse('details', args=(id,)))
+
+def get_account_url():
+    if 'WEBSITE_HOSTNAME' in os.environ or ("USE_AZURE_STORAGE" in os.environ):
+        return "https://%s.blob.core.windows.net" % os.environ['STORAGE_ACCOUNT_NAME']
+    else:
+        return os.environ['STORAGE_ACCOUNT_NAME']

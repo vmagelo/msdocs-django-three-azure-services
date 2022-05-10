@@ -2,6 +2,6 @@ Django
 psycopg2-binary
 python-dotenv
 whitenoise
-sslserver
+django-sslserver
 azure-storage-blob
 azure-identity
