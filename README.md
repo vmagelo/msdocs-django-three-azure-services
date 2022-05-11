@@ -9,9 +9,9 @@ This is a Python web app using the Django framework with three Azure services: A
 | Storage | Azure Blob Storage<sup>1</sup> or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-<sup>1</sup>Current code can work with Azure Blob Storage used locally or Azurite. The same environment variables STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME in *.env* are used. Note to use Azure, we need to run Django with SSL, which would require a certificate and adding some libraries. See [Tip 13](#tip-13-using-ssl) for using SSL. See [Tip 14](#tip-14-using-azurite) for using Azurite.
+<sup>1</sup>Current code can work with Azure Blob Storage accessed from local environment or Azurite (local storage emulator). The same environment variables STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME in *.env* are used for both cases. The code figures out what to do for each case. And AzureDefaultCredential is used in both cases. Note: to use Azure, we need to run Django with SSL, which would require a certificate and adding some libraries. See [Tip 13](#tip-13-using-ssl) for using SSL. See [Tip 14](#tip-14-using-azurite) for using Azurite.
 
-The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
+The Python app code doesn't change when moving from dev to Azure-hosted. All that changes is how the environment variables are set. With that in mind, there are two patterns for dealing with authentication:
 
 |   | Local dev | Azure-hosted |
 | - | --------- | ------------ |
@@ -342,6 +342,11 @@ Step 3: Use machine CA certificates.
 pip install python-certifi-win32
 ```
 
+Step 4: Change the run command to:
+
+```
+ python manage.py runsslserver --certificate cert.pem --key key.pem
+```
 ### Tip 14: Using Azurite
 
 We recommend using [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) from the command line to emulate blob storage that can be used by the web app. (Using it from Visual Studio Code with an extension is easier, but couldn't get past SSL problems.)
