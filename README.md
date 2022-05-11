@@ -1,11 +1,11 @@
-# Deploy a Python (Django) web app with PostgreSQL and Blob Storage in Azure
+# Deploy a Python (Django) web app with PostgreSQL, Blob Storage, and Managed Identity in Azure
 
 This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be run locally and then deployed to Azure. 
 
 | Function      | Local Dev | Azure Hosted |
 | ------------- | --------- | ------------ |
 | Web app | runs locally, e.g., http://127.0.0.1:8000 | runs in App Service, e.g., https://\<app-name>.azurewebsites.net  |
-| Database | Local PostgreSQL instance | Azure PostgreSQL service |
+| Database | Local PostgreSQL instance | Azure Database for PostgreSQL |
 | Storage | Azure Blob Storage<sup>1</sup> or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
