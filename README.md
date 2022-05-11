@@ -9,7 +9,7 @@ This is a Python web app using the Django framework with three Azure services: A
 | Storage | Azure Blob Storage<sup>1</sup> or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-<sup>1</sup>Current code assumes Azure Blob Storage used locally. To use Azurite, you would need to set STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME variables appropriately in *.env* as well as add AZURITE_ACCOUNTS variable. Also would need to run Django on https, which would require a certificate and adding some libraries. This is beyond the scope of this sample app.
+<sup>1</sup>Current code can work with Azure Blob Storage used locally or Azurite. The same environment variables STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME in *.env* are used. Note to use Azure, we need to run Django with SSL, which would require a certificate and adding some libraries. See [Tip 13](#tip-13-using-ssl) for using SSL. See [Tip 14](#tip-14-using-azurite) for using Azurite.
 
 The assumption is that code doesn't change when moving from dev to Azure-hosted. With that in mind, there are two patterns for dealing with authentication:
 
@@ -47,8 +47,8 @@ Create all Azure resources in the same group.
 
 1. Set up PostgreSQL
     * Add firewall rule so local machine can connect (necessary if you are creating table in VS Code, otherwise optional)
-    * "Allow public access from any Azure service" as we did in previous tutorial. See [Tip 8](#tip-8---postgresql---firewalls)
-    * Configure managed identity. ** See [Tip 9](#tip-9---managed-identity-with-azure-postgresql)
+    * "Allow public access from any Azure service" as we did in previous tutorial. See [Tip 8](#tip-8-postgresql---firewalls)
+    * Configure managed identity. ** See [Tip 9](#tip-9-managed-identity-with-azure-postgresql)
 
 1. Set up Azure Storage.
     * Create container "photos".
@@ -72,7 +72,7 @@ The [requirements.txt](./requirements.txt) has the following packages:
 | [azure-blob-storage](https://pypi.org/project/azure-storage/) | Microsoft Azure Storage SDK for Python |
 | [azure-identity](https://pypi.org/project/azure-identity/) | Microsoft Azure Identity Library for Python |
 
-## How to run locally
+## How to run locally (without SSL)
 
 Create a virtual environment.
 
@@ -99,13 +99,15 @@ Run the app.
 python manage.py runserver
 ```
 
+See [Tip 13](#tip-13-using-ssl) for running locally with SSL.
+
 ## Tips and trick learned during development
 
-### Tip 1
+### Tip 1: Migrations
 
 When making [model.py](./restaurant_review/models.py) changes run `python manage.py makemigrations` to pick up those changes. For more information, see [django-admin and manage.py](https://docs.djangoproject.com/en/4.0/ref/django-admin/#makemigrations). Run `python manage.py migrate` after `makemigrations`.
 
-### Tip 2
+### Tip 2: PostgreSQL commands
 
 When creating a new PostgreSQL locally, for example with [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/what-is-azure-data-studio?view=sql-server-ver15):
 
@@ -125,7 +127,7 @@ postgres=# \du
 postgres=# \q
 ```
 
-### Tip 3
+### Tip 3: Creating a GUID
 
 To create an GUID in Python, use [UUIDField](https://docs.djangoproject.com/en/1.8/ref/models/fields/#uuidfield), which creates a universally unique identifier. When used with PostgreSQL, this stores in a **uuid** datatype.
 
@@ -142,7 +144,7 @@ uuid_str = str(uuid.uuid4())
 
 CharField could be max length 32 (size of uuid) but doesn't hurt to make it bigger in case some other uuid that is longer is used.
 
-### Tip 4
+### Tip 4: Storage container read access
 
 To work with the Python SDK and Azure Blob Storage, see [Quickstart: Manage blobs with Python v12 SDK](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python).
 
@@ -150,7 +152,7 @@ Create container called *restaurants* and set access level to *Blob (anonymous r
 
 When **writing**, this should be done authenticated. Locally with authenticated Azure AD User or App service principal (registered app) with role. Deployed, with App service principal or managed identity.
 
-### Tip 5
+### Tip 5: HTML input file
 
 To work with the HTML input file, make sure the form tag has *encytype*.
 
@@ -164,7 +166,7 @@ To work with the HTML input file, make sure the form tag has *encytype*.
 
 The input tag *accept* attribute only filters what can be uploaded in the upload dialog box. It can easily be circumvented by changing the filter. A more rigorous check would be to use a library like [Pillow](https://pillow.readthedocs.io/en/stable/) in Python, or do some other checking in JavaScript before upload. This is beyond the scope of this sample app.
 
-### Tip 6
+### Tip 6: Python message framework
 
 This sample app uses the Django [messages framework](https://docs.djangoproject.com/en/4.0/ref/contrib/messages/). For example, to pass a message back if there is an error in a form submission (add restaurant, add review), do this:
 
@@ -196,7 +198,7 @@ This storage messages in session data. The default is cookie if the `MESSAGE_STO
 
 Todo: Go back to simple passing of "error_message" variable to template. Should be sufficient and have less coding.
 
-### Tip 7
+### Tip 7: Shared token cache issue
 
 A big gotcha (that some may hit, I did) with using developer account in local dev is that you could get "SharedTokenCacheCredential: Azure Active Directory error '(invalid_grant) AADSTS500200" error even following instructions in how to use login in with developer account and `DefaultAzureCredential()`. It seems that there can be problems with SharedTokenCacheCredential in Visual Studio and this is the recommended solution:
 
@@ -209,7 +211,7 @@ Another workaround, not recommended in general, is to just add to *.env* file AZ
 
 Is there any harm on keeping `exclude_shared_token_cache_credential=True` when deploying?
 
-### Tip 8 - PostgreSQL - firewalls
+### Tip 8: PostgreSQL - firewalls
 
 We connect to PostgreSQL with DBNAME, DBHOST, and DBUSER passed as environment variables and used in [development.py](./azureproject/development.py) and [production.py](./azureproject/production.py) to set the [DATABASES variable expected by Django](https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES). This is how we connect, but we must first be able to access the server. That's where networking and firewall rules come into play.
 
@@ -221,7 +223,7 @@ Some ways to deal with networking:
 
 * There is a new way to create a PostgreSQL in it's own VPN and deal with security that way. This isn't generally available at this time.
 
-### Tip 9 - Managed Identity with Azure PostgreSQL
+### Tip 9: Managed Identity with Azure PostgreSQL
 
 It's tricky. Trickier than managed identity with storage. The goal is to avoid having to specify a password and let Azure take care of it. Think about the previous App Service / PostgreSQL tutorial where we set DBPASS as a configuration parameter for the App Service. We want to avoid that.
 
@@ -301,7 +303,6 @@ When running WhiteNoise, you could spend a lot of time troubleshooting errors an
 
 * For `STATICFILES_STORAGE` we don't need the `Manifest` part, which is overkill for sample. The `Compressed` part of class name just create .gz files in static file location. 
 
-
 ### Tip 12: Troubleshooting deployment
 
 Here are things to try:
@@ -317,3 +318,39 @@ Here are things to try:
 * `Debug = False` should be always on for production settings, but for troubleshooting, setting to `True` may help if you're stuck. In particular, if your code has a circular import, it will only be flagged when `Debug=False`. 
 
 * Read the Django tips on the [Oryx GitHub page](https://github.com/microsoft/Oryx/wiki/Django-Tips). Oryx is the build system used to compile Django source code into runnable artifacts in App Service.
+
+### Tip 13: Using SSL
+
+The steps for getting SSL to run are roughly this:
+
+Step 1: Install [mkcert](https://github.com/FiloSottile/mkcert). Run it and create a certificate. The alternative if you don't use it is that your browser will keep showing warning.
+
+```
+mkcert --install
+mkcert -cert-file cert.pem -key-file key.pem localhost 127.0.0.1 
+```
+
+Step 2: Add TLS (SSL) capabilities to the local development environment, add the [django-sslserver](https://pypi.org/project/django-sslserver/) package:
+
+```
+pip install django-sslserver
+```
+
+Step 3: Use machine CA certificates.
+
+```
+pip install python-certifi-win32
+```
+
+### Tip 14: Using Azurite
+
+We recommend using [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) from the command line to emulate blob storage that can be used by the web app. (Using it from Visual Studio Code with an extension is easier, but couldn't get past SSL problems.)
+
+```dos
+azurite-blob ^
+    --location "<folder-path>" ^
+    --debug "<folder-path>\debug.log" ^
+    --oauth basic ^
+    --cert "<project-root>\cert.pem" ^
+    --key "<project-root\key.pem"
+```
