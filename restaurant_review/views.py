@@ -127,6 +127,7 @@ def add_review(request, id):
     return HttpResponseRedirect(reverse('details', args=(id,)))
 
 def get_account_url():
+    # Create LOCAL_USE_AZURE_STORAGE environment variable to use Azure Storage locally. 
     if 'WEBSITE_HOSTNAME' in os.environ or ("LOCAL_USE_AZURE_STORAGE" in os.environ):
         return "https://%s.blob.core.windows.net" % os.environ['STORAGE_ACCOUNT_NAME']
     else:
