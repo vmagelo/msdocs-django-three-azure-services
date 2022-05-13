@@ -79,7 +79,7 @@ def add_review(request, id):
             raise RequestException()            
     except (KeyError, exceptions.RequestException) as e:
         # Redisplay the details page
-        messages.add_message(request, messages.INFO, 'Review not added. Include at least name and rating for review.')
+        messages.add_message(request, messages.INFO, 'Review not added. Include at least a name and rating for review.')
         return HttpResponseRedirect(reverse('details', args=(id,)))  
     else:
 
@@ -127,7 +127,7 @@ def add_review(request, id):
     return HttpResponseRedirect(reverse('details', args=(id,)))
 
 def get_account_url():
-    if 'WEBSITE_HOSTNAME' in os.environ or ("USE_AZURE_STORAGE" in os.environ):
+    if 'WEBSITE_HOSTNAME' in os.environ or ("LOCAL_USE_AZURE_STORAGE" in os.environ):
         return "https://%s.blob.core.windows.net" % os.environ['STORAGE_ACCOUNT_NAME']
     else:
         return os.environ['STORAGE_ACCOUNT_NAME']

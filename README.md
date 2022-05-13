@@ -1,6 +1,6 @@
 # Deploy a Python (Django) web app with PostgreSQL, Blob Storage, and Managed Identity in Azure
 
-This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be run locally and then deployed to Azure. 
+This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be run locally and then deployed to Azure. Related: [Flask version](https://github.com/vmagelo/msdocs-flask-three-azure-services).
 
 | Function      | Local Dev | Azure Hosted |
 | ------------- | --------- | ------------ |
@@ -9,7 +9,7 @@ This is a Python web app using the Django framework with three Azure services: A
 | Storage | Azure Blob Storage<sup>1</sup> or local emulator like [Azurite emulator for local Azure storage development](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Azure Blob Storage |
 
 
-<sup>1</sup>Current code can work with Azure Blob Storage accessed from local environment or Azurite (local storage emulator). The same environment variables STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME in *.env* are used for both cases. The code figures out what to do for each case. And AzureDefaultCredential is used in both cases. Note: to use Azure, we need to run Django with SSL, which would require a certificate and adding some libraries. See [Tip 13](#tip-13-using-ssl) for using SSL. See [Tip 14](#tip-14-using-azurite) for using Azurite.
+<sup>1</sup>Current code can work with Azure Blob Storage accessed from local environment or Azurite (local storage emulator). The same environment variables STORAGE_ACCOUNT_NAME and STORAGE_CONTAINER_NAME in *.env* are used for both cases. The code figures out what to do for each case. And AzureDefaultCredential is used in both cases. Note: to use Azurite emulator, we need to run Django with SSL, which would require a certificate and adding some libraries. See [Tip 13](#tip-13-using-ssl) for using SSL. See [Tip 14](#tip-14-using-azurite) for using Azurite.
 
 The Python app code doesn't change when moving from dev to Azure-hosted. All that changes is how the environment variables are set. With that in mind, there are two patterns for dealing with authentication:
 
@@ -74,10 +74,10 @@ The [requirements.txt](./requirements.txt) has the following packages:
 
 ## How to run locally (without SSL)
 
-Create a virtual environment.
+Create a virtual environment. For SSL work, 3.9 version is best, especially with python-certifi-win32 package.
 
 ```dos
-py -m venv .venv
+py -3.9 -m venv .venv
 .venv/scripts/activate
 ```
 
@@ -101,7 +101,7 @@ python manage.py runserver
 
 See [Tip 13](#tip-13-using-ssl) for running locally with SSL.
 
-## Tips and trick learned during development
+## Tips and tricks learned during development
 
 ### Tip 1: Migrations
 
@@ -336,7 +336,7 @@ Step 2: Add TLS (SSL) capabilities to the local development environment, add the
 pip install django-sslserver
 ```
 
-Step 3: Use machine CA certificates.
+Step 3: Use machine CA certificates. (Only do this with Python 3.9 or perhaps earlier. Did not work in Python 3.10)
 
 ```
 pip install python-certifi-win32
@@ -349,7 +349,7 @@ Step 4: Change the run command to:
 ```
 ### Tip 14: Using Azurite
 
-We recommend using [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) from the command line to emulate blob storage that can be used by the web app. (Using it from Visual Studio Code with an extension is easier, but couldn't get past SSL problems.)
+We recommend using [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite) from the command line to emulate blob storage that can be used by the web app. (Using it from Visual Studio Code with an extension is easier, but couldn't get past SSL problems. Plus, running from command line is more general and can potentially reach more users.)
 
 ```dos
 azurite-blob ^
