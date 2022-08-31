@@ -1,5 +1,12 @@
 # Deploy a Python (Django) web app with PostgreSQL, Blob Storage, and Managed Identity in Azure
 
+---
+**NOTE**
+
+This repo was pre-work for articles that were eventually published here: [Deploy a Python web app to azure with managed identity](https://docs.microsoft.com/en-us/azure/developer/python/tutorial-python-managed-identity-01).
+
+---
+
 This is a Python web app using the Django framework with three Azure services: Azure App Service, Azure Database for PostgreSQL relational database service, and Azure Blob Storage. This app is designed to be run locally and then deployed to Azure. Related: [Flask version](https://github.com/vmagelo/msdocs-flask-three-azure-services).
 
 | Function      | Local Dev | Azure Hosted |
